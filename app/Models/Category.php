@@ -10,5 +10,10 @@ class Category extends Model
     use SoftDeletes, \App\Models\Traits\Uuid;
     protected $fillable = ['name', 'description', 'is_active'];
     protected $dates = ['deleted_at'];
-    protected $casts = ['id' => 'string'];
+    protected $casts = [
+      'id' => 'string', 
+      'is_active' => 'bool'
+    ];
+
+    public $incrementing = false;
 }
