@@ -14,69 +14,45 @@ class CategoryControllerTest extends TestCase
     use DatabaseMigrations;
     use TestValidations;
 
+    private $category;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->category = factory(Category::class)->create();
+    }
+
     public function testIndex()
     {
-        $category = factory(Category::class)->create();
         $response = $this->get(route('categories.index'));
 
         $response
             ->assertStatus(200)
-            ->assertJson([$category->toArray()]);
+            ->assertJson([$this->category->toArray()]);
     }
 
     public function testShow()
     {
-        $category = factory(Category::class)->create();
-        $response = $this->get(route('categories.show', ['category' => $category->id]));
+        $response = $this->get(route('categories.show', ['category' => $this->category->id]));
 
         $response
             ->assertStatus(200)
-            ->assertJson($category->toArray());
+            ->assertJson($this->category->toArray());
     }
 
     public function testInvalidData()
     {
-        $response = $this->json('POST', route('categories.store'), []);
-        $this->assertValidationRequired($response);
+        $data = ['name' => ''];
+        $this->assertInvalidInStoreAction($data, 'required');
+        $this->assertInvalidInUpdateAction($data, 'required');
 
-        $response = $this->json('POST', route('categories.store'), [
-            'name' => str_repeat('a', 256),
-            'is_active' => 'a'
-        ]);
-        $this->assertValidationNameMax($response);
-        $this->assertValidationIsActiveBoolean($response);
+        $data = ['name' => str_repeat('a', 256)];
+        $this->assertInvalidInStoreAction($data, 'max.string', ['max' => 255]);
+        $this->assertInvalidInUpdateAction($data, 'max.string', ['max' => 255]);
 
-        $category = factory(Category::class)->create();
-        $response = $this->json('PUT', route('categories.update', ['category' => $category->id]), []);
-        $this->assertValidationRequired($response);
-
-
-        $response = $this->json(
-            'PUT', 
-            route('categories.update', ['category' => $category->id]), 
-            [
-                'name' => str_repeat('a', 256),
-                'is_active' => 'a'
-            ]
-        );
-        $this->assertValidationNameMax($response);
-        $this->assertValidationIsActiveBoolean($response);
-    }
-
-    private function assertValidationRequired($response)
-    {
-        $this->assertInvalidFields($response, ['name'], 'required');
-        $response->assertJsonMissingValidationErrors(['is_active']);
-    }
-
-    private function assertValidationNameMax($response)
-    {
-        $this->assertInvalidFields($response, ['name'], 'max.string', ['max' => 255]);
-    }
-
-    private function assertValidationIsActiveBoolean($response)
-    {
-        $this->assertInvalidFields($response, ['is_active'], 'boolean');
+        $data = ['is_active' => 'a'];
+        $this->assertInvalidInStoreAction($data, 'boolean');
+        $this->assertInvalidInUpdateAction($data, 'boolean');
     }
 
     public function testStore()
@@ -150,15 +126,23 @@ class CategoryControllerTest extends TestCase
 
     public function testDestroy()
     {
-        $category = factory(Category::class)->create();
-
-        $response = $this->json('DELETE', route('categories.destroy', ['category' => $category->id]));
+        $response = $this->json('DELETE', route('categories.destroy', ['category' => $this->category->id]));
 
         $response
             ->assertStatus(204);
 
-        $this->assertNull(Category::find($category->id));
-        $this->assertNotNull(Category::withTrashed()->find($category->id));
+        $this->assertNull(Category::find($this->category->id));
+        $this->assertNotNull(Category::withTrashed()->find($this->category->id));
     }
-}
 
+    protected function routeStore()
+    {
+        return route('categories.store');
+    }
+
+    protected function routeUpdate()
+    {
+        return route('categories.update', ['category' => $this->category->id]);
+    }
+
+}
