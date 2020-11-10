@@ -3,50 +3,48 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
 use Illuminate\Http\Request;
 
 abstract class BasicCrudController extends Controller
 {
     protected abstract function model();
+    protected abstract function rulesStore();
     
-    private $rules =[
-        'name' => 'required|max:255',
-        'is_active' => 'boolean'
-    ];
-
     public function index()
     {
        return $this->model()::all();
     }
 
-/*
     public function store(Request $request)
     {
-        $this->validate($request, $this->rules);
-        $category = Category::create($request->all());
-        $category->refresh();
-        return $category;
+        $validatedData = $this->validate($request, $this->rulesStore());
+        $obj = $this->model()::create($validatedData);
+        $obj->refresh();
+        return $obj;
     }
 
-    public function show(Category $category)
+    protected function findOrFail($id)
     {
-        return $category;
+        $model = $this->model();
+        $keyName = (new $model)->getRouteKeyName();
+        return $this->model()::where($keyName, $id)->firstOrFail();
+    }
+    
+    public function show($entity)
+    {
+        return $entity;
     }
 
-
-    public function update(Request $request, Category $category)
+    public function update(Request $request, $entity)
     {
-        $this->validate($request, $this->rules);
-        $category->update($request->all());
-        return $category;
+        $validatedData = $this->validate($request, $this->rulesStore());
+        $entity->update($validatedData);
+        return $entity;
     }
 
-
-    public function destroy(Category $category)
+    public function destroy($entity)
     {
-        $category->delete();
+        $entity->delete();
         return response()->noContent();
     }
-*/
 }
