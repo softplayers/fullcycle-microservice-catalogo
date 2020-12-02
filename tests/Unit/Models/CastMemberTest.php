@@ -51,7 +51,7 @@ class CastMemberTest extends TestCase
 
     public function testCasts()
     {
-      $expected = ['id' => 'string', 'is_active' => 'bool'];
+      $expected = ['id' => 'string', 'type' => 'integer', 'is_active' => 'bool'];
       $this->assertEqualsCanonicalizing($expected, $this->castMember->getCasts());
     }
 
@@ -68,7 +68,5 @@ class CastMemberTest extends TestCase
       }
       $this->assertCount(count($expected), $this->castMember->getDates());
     }
-
-
 
 }
