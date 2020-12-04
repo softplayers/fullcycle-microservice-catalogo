@@ -22,7 +22,6 @@ class CastMemberTest extends TestCase
         'id', 
         'name', 
         'type', 
-        'is_active',
         'created_at',
         'updated_at',
         'deleted_at'
@@ -39,27 +38,12 @@ class CastMemberTest extends TestCase
       $this->assertTrue(Uuid::isValid($castMember->id));
       $this->assertEquals('teste1', $castMember->name);
       $this->assertEquals(1, $castMember->type);
-      $this->assertTrue($castMember->is_active);
 
       $castMember = CastMember::create([
         'name' => 'teste1',
         'type' => 2
       ]);
       $this->assertEquals(2, $castMember->type);
-
-      $castMember = CastMember::create([
-        'name' => 'teste1',
-        'type' => 1,
-        'is_active' => false
-      ]);
-      $this->assertFalse($castMember->is_active);
-
-      $castMember = CastMember::create([
-        'name' => 'teste1',
-        'type' => 1,
-        'is_active' => true
-      ]);
-      $this->assertTrue($castMember->is_active);
     }
 
     public function testUpdate()
@@ -71,7 +55,6 @@ class CastMemberTest extends TestCase
       $data = [
         'name' => 'test_name_updated',
         'type' => 2,
-        'is_active' => true,
       ];
 
       $castMember->update($data);

@@ -9,6 +9,7 @@ abstract class BasicCrudController extends Controller
 {
     protected abstract function model();
     protected abstract function rulesStore();
+    protected abstract function rulesUpdate();
     
     public function index()
     {
@@ -30,20 +31,23 @@ abstract class BasicCrudController extends Controller
         return $this->model()::where($keyName, $id)->firstOrFail();
     }
     
-    public function show($entity)
+    public function show($id)
     {
+        $entity = $this->findOrFail($id);
         return $entity;
     }
 
-    public function update(Request $request, $entity)
+    public function update(Request $request, $id)
     {
-        $validatedData = $this->validate($request, $this->rulesStore());
+        $entity = $this->findOrFail($id);
+        $validatedData = $this->validate($request, $this->rulesUpdate());
         $entity->update($validatedData);
         return $entity;
     }
 
-    public function destroy($entity)
+    public function destroy($id)
     {
+        $entity = $this->findOrFail($id);
         $entity->delete();
         return response()->noContent();
     }

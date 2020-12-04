@@ -90,6 +90,13 @@ class BasicCrudControllerTest extends TestCase
         $reflectionMethod->invokeArgs($this->controller, [0]);
     }
 
+    public function testShow()
+    {
+        $result = $this->controller->show($this->entity->id);
+        $this->assertEquals($result->toArray(), $this->entity->toArray());
+    }
+
+
     public function testUpdate() 
     {
         $newData = [
@@ -103,12 +110,19 @@ class BasicCrudControllerTest extends TestCase
             ->once()
             ->andReturn($newData);
 
-        $obj = $this->controller->update($request, $this->entity);
+        $obj = $this->controller->update($request, $this->entity->id);
 
         $this->assertEquals(
+            $obj->toArray(),
             CategoryStub::find($this->entity->id)->toArray(),
-            $obj->toArray() + $newData
         );
     }
 
+    public function testDestroy()
+    {
+        $result = $this->controller->destroy($this->entity->id);
+        $this->createTestResponse($result)
+            ->assertStatus(204);
+        $this->assertCount(0, CategoryStub::all());
+    }
 }
