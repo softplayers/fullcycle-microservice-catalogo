@@ -68,8 +68,8 @@ class VideoControllerTest extends TestCase
             'title' => str_repeat('a', 256)
         ];
 
-        $this->assertInvalidInStoreAction($data, 'max_string', ['max' => 255]);
-        $this->assertInvalidInUpdateAction($data, 'max_string', ['max' => 255]);
+        $this->assertInvalidInStoreAction($data, 'max.string', ['max' => 255]);
+        $this->assertInvalidInUpdateAction($data, 'max.string', ['max' => 255]);
     }
 
     public function testInvalidInteger()
