@@ -2,14 +2,17 @@
 
 namespace Tests\Unit\Models;
 
-use App\Models\Category;
+use App\Models\Genre;
 use App\Models\Traits\Uuid;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class CategoryTest extends TestCase
+class GenreUnitTest extends TestCase
 {
-    private $category;
+    private $genre;
 
     public static function setUpBeforeClass(): void
     {
@@ -24,7 +27,7 @@ class CategoryTest extends TestCase
     protected function setUp(): void
     {
       parent::setUp();
-      $this->category = new Category();
+      $this->genre = new Genre();
     }
 
     protected function tearDown(): void
@@ -35,34 +38,34 @@ class CategoryTest extends TestCase
     public function testIfUseTraits()
     {
       $expected = [SoftDeletes::class, Uuid::class];
-      $actual = array_keys(class_uses(Category::class));
+      $actual = array_keys(class_uses(Genre::class));
       $this->assertEqualsCanonicalizing($expected, $actual);
     }
 
     public function testFillable()
     {
-      $fillable = ['name', 'description', 'is_active'];
-      $this->assertEqualsCanonicalizing($fillable, $this->category->getFillable());
+      $fillable = ['name', 'is_active'];
+      $this->assertEqualsCanonicalizing($fillable, $this->genre->getFillable());
     }
 
     public function testCasts()
     {
       $expected = ['id' => 'string', 'is_active' => 'bool'];
-      $this->assertEqualsCanonicalizing($expected, $this->category->getCasts());
+      $this->assertEqualsCanonicalizing($expected, $this->genre->getCasts());
     }
 
     public function testIncrementing()
     {
-      $this->assertFalse($this->category->incrementing);
+      $this->assertFalse($this->genre->incrementing);
     }
 
     public function testDatesAttributes()
     {
       $expected = ['deleted_at', 'created_at', 'updated_at'];
       foreach ($expected as $date) {
-        $this->assertContains($date, $this->category->getDates());
+        $this->assertContains($date, $this->genre->getDates());
       }
-      $this->assertCount(count($expected), $this->category->getDates());
+      $this->assertCount(count($expected), $this->genre->getDates());
     }
 
 

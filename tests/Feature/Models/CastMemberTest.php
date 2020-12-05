@@ -22,7 +22,6 @@ class CastMemberTest extends TestCase
         'id', 
         'name', 
         'type', 
-        'is_active',
         'created_at',
         'updated_at',
         'deleted_at'
@@ -33,50 +32,29 @@ class CastMemberTest extends TestCase
 
     public function testCreate()
     {
-      $castMember = CastMember::create(['name' => 'teste1']);
+      $castMember = CastMember::create(['name' => 'teste1', 'type' => 1]);
       $castMember->refresh();
 
       $this->assertTrue(Uuid::isValid($castMember->id));
       $this->assertEquals('teste1', $castMember->name);
-      $this->assertNull($castMember->type);
-      $this->assertTrue($castMember->is_active);
+      $this->assertEquals(1, $castMember->type);
 
       $castMember = CastMember::create([
         'name' => 'teste1',
-        'type' => null
+        'type' => 2
       ]);
-      $this->assertNull($castMember->type);
-
-      $castMember = CastMember::create([
-        'name' => 'teste1',
-        'type' => 'test_type'
-      ]);
-      $this->assertEquals('test_type', $castMember->type);
-
-      $castMember = CastMember::create([
-        'name' => 'teste1',
-        'is_active' => false
-      ]);
-      $this->assertFalse($castMember->is_active);
-
-      $castMember = CastMember::create([
-        'name' => 'teste1',
-        'is_active' => true
-      ]);
-      $this->assertTrue($castMember->is_active);
-
+      $this->assertEquals(2, $castMember->type);
     }
 
     public function testUpdate()
     {
       $castMember = factory(CastMember::class)->create([
-        'type' => 'test_type'
+        'type' => 1
       ])->first();
 
       $data = [
         'name' => 'test_name_updated',
-        'type' => 'test_type_updated',
-        'is_active' => true,
+        'type' => 2,
       ];
 
       $castMember->update($data);
