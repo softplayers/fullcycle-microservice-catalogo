@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
+use App\Models\Category;
 use App\Models\Genre;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
@@ -42,73 +43,90 @@ class GenreControllerTest extends TestCase
 
     public function testInvalidData()
     {
-        $response = $this->json('POST', route('genres.store'), []);
-        $this->assertValidationRequired($response);
+        $data = [
+            'name' => '',
+            'categories_id' => ''
+        ];
+        $this->assertInvalidInStoreAction($data, 'required');
+        $this->assertInvalidInUpdateAction($data, 'required');
 
-        $response = $this->json('POST', route('genres.store'), [
+        $data = [
             'name' => str_repeat('a', 256),
+        ];
+        $this->assertInvalidInStoreAction($data, 'max.string', ['max' => 255]);
+        $this->assertInvalidInUpdateAction($data, 'max.string', ['max' => 255]);
+
+        $data = [
             'is_active' => 'a'
-        ]);
-        $this->assertValidationNameMax($response);
-        $this->assertValidationIsActiveBoolean($response);
+        ];
+        $this->assertInvalidInStoreAction($data, 'boolean');
+        $this->assertInvalidInUpdateAction($data, 'boolean');
 
-        $genre = factory(Genre::class)->create();
-        $response = $this->json('PUT', route('genres.update', ['genre' => $genre->id]), []);
-        $this->assertValidationRequired($response);
+        $data = [
+            'categories_id' => 'a'
+        ];
+        $this->assertInvalidInStoreAction($data, 'array');
+        $this->assertInvalidInUpdateAction($data, 'array');
 
+        $data = [
+            'categories_id' => [100]
+        ];
+        $this->assertInvalidInStoreAction($data, 'exists');
+        $this->assertInvalidInUpdateAction($data, 'exists');
 
-        $response = $this->json(
-            'PUT', 
-            route('genres.update', ['genre' => $genre->id]), 
-            [
-                'name' => str_repeat('a', 256),
-                'is_active' => 'a'
-            ]
-        );
-        $this->assertValidationNameMax($response);
-        $this->assertValidationIsActiveBoolean($response);
-    }
-
-    private function assertValidationRequired($response)
-    {
-        $this->assertInvalidFields($response, ['name'], 'required');
-        $response->assertJsonMissingValidationErrors(['is_active']);
-    }
-
-    private function assertValidationNameMax($response)
-    {
-        $this->assertInvalidFields($response, ['name'], 'max.string', ['max' => 255]);
-    }
-
-    private function assertValidationIsActiveBoolean($response)
-    {
-        $this->assertInvalidFields($response, ['is_active'], 'boolean');
+        $category = factory(Category::class)->create();
+        $category->delete();
+        $data = [
+            'categories_id' => [$category->id]
+        ];
+        $this->assertInvalidInStoreAction($data, 'exists');
+        $this->assertInvalidInUpdateAction($data, 'exists');
     }
 
     public function testStore()
     {
+        $category = factory(Category::class)->create();
         $data = ['name' => 'test'];
-        $response = $this->assertStore($data, $data + ['is_active' => true, 'deleted_at' => null]);
+        $response = $this->assertStore(
+            $data + ['categories_id' => [$category->id]], 
+            $data + ['is_active' => true, 'deleted_at' => null]
+        );
         $response->assertJsonStructure(['created_at', 'updated_at']);
+        $this->assertHasCategory($response->json('id'), $category->id);
 
         $data = [
             'name' => 'test',
             'is_active' => false
         ];
-        $this->assertStore($data, $data);
+        $this->assertStore(
+            $data + ['categories_id' => [$category->id]], 
+            $data + ['is_active' => false],
+        );
     }
 
 
     public function testUpdate()
     {
+        $category = factory(Category::class)->create();
         $data = [
             'name' => 'test',
             'is_active' => true
         ];
-
-        $response = $this->assertUpdate($data, $data + ['deleted_at' => null]);
+        $response = $this->assertUpdate(
+            $data + ['categories_id' => [$category->id]], 
+            $data + ['deleted_at' => null]
+        );
         $response->assertJsonStructure(['created_at', 'updated_at']);
+        $this->assertHasCategory($response->json('id'), $category->id);
     }    
+
+    protected function assertHasCategory($genreId, $categoryId) 
+    {
+        $this->assertDataBaseHas('category_genre', [
+            'genre_id' => $genreId,
+            'category_id' => $categoryId
+        ]);
+    }
 
     public function testDestroy()
     {
