@@ -133,7 +133,7 @@ class GenreControllerTest extends TestCase
 
     public function testSyncCategories() 
     {
-        $categoriesId = factory(Category::class)->create()->pluck('id')->toArray();
+        $categoriesId = factory(Category::class, 3)->create()->pluck('id')->toArray();
 
         $sendData = [
             'name' => 'test',
@@ -194,6 +194,45 @@ class GenreControllerTest extends TestCase
         $hasError = false;
         try {
             $controller->store($request);
+        } catch (TestException $exception) {
+            $this->assertCount(1, Genre::all());
+            $hasError = true;
+        }
+
+        $this->assertTrue($hasError);
+    }
+
+    public function testRollbackUpdate()
+    {
+        $controller = \Mockery::mock(GenreController::class)
+            ->makePartial()
+            ->shouldAllowMockingProtectedMethods();
+
+        $controller
+            ->shouldReceive('findOrFail')
+            ->withAnyArgs()
+            ->andReturn($this->genre);
+
+        $controller
+            ->shouldReceive('validate')
+            ->withAnyArgs()
+            ->andReturn(['name' => 'test']);
+
+        $controller 
+            ->shouldReceive('rulesUpdate')
+            ->withAnyArgs()
+            ->andReturn([]);
+
+        $controller
+            ->shouldReceive('handleRelations')
+            ->once()
+            ->andThrow(new TestException());
+        
+        $request = \Mockery::mock(Request::class);
+
+        $hasError = false;
+        try {
+            $controller->update($request, 1);
         } catch (TestException $exception) {
             $this->assertCount(1, Genre::all());
             $hasError = true;
