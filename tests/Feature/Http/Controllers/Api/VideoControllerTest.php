@@ -305,7 +305,7 @@ class VideoControllerTest extends TestCase
         $genresId = $genres->pluck('id')->toArray();
         $categoryId = factory(Category::class)->create()->id;
         $genres->each(function ($genre) use ($categoryId) {
-            $genre->categires()->sync($categoryId);
+            $genre->categories()->sync($categoryId);
         });
 
         $response = $this->json(
@@ -400,7 +400,7 @@ class VideoControllerTest extends TestCase
         $request = \Mockery::mock(Request::class);
 
         try {
-            $controller->update($request);
+            $controller->update($request, 1);
         } catch(TestException $exception) {
             $this->assertCount(1, Video::all());
         }
