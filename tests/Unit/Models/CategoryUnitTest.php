@@ -11,16 +11,6 @@ class CategoryUnitTest extends TestCase
 {
     private $category;
 
-    public static function setUpBeforeClass(): void
-    {
-      parent::setUpBeforeClass();
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-      parent::tearDownAfterClass();
-    }
-
     protected function setUp(): void
     {
       parent::setUp();

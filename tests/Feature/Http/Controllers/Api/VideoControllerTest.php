@@ -312,8 +312,8 @@ class VideoControllerTest extends TestCase
             'POST',
             $this->routeStore(),
             $this->sendData + [
-                'category_id' => [$categoryId],
-                'genre_id' => [$genresId[0]]
+                'categories_id' => [$categoryId],
+                'genres_id' => [$genresId[0]]
             ]
         );
         $this->assertDatabaseHas('genre_video', [
@@ -325,8 +325,8 @@ class VideoControllerTest extends TestCase
             'PUT',
             route('videos.update', ['video' => $response->json('id')]),
             $this->sendData + [
-                'category_id' => [$categoryId],
-                'genre_id' => [$genresId[1], $genresId[2]]
+                'categories_id' => [$categoryId],
+                'genres_id' => [$genresId[1], $genresId[2]]
             ]
         );
         $this->assertDatabaseMissing('genre_video', [
