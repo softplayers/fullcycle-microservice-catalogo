@@ -2,19 +2,29 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Genre;
+use App\Models\Video;
 use Illuminate\Http\Request;
 
-class GenreController extends BasicCrudController
+class VideoController extends BasicCrudController
 {
 
-    private $rules =[
-        'name' => 'required|max:255',
-        'is_active' => 'boolean',
-        'categories_id' => 'required|array|exists:categories,id,deleted_at,NULL'
-    ];
+    private $rules;
 
-    public function store(Request $request)
+    public function __construct() 
+    {
+        $this->rules = [
+            'title' => 'required|max:255',
+            'description' => 'required',
+            'year_launched' => 'required|date_format:Y',
+            'opened' => 'boolean',
+            'rating' => 'required|in:' . implode(',', Video::RATING_LIST),
+            'duration' => 'required|integer',
+            'categories_id' => 'required|array|exists:categories,id,deleted_at,NULL',
+            'genres_id' => 'required|array|exists:genres,id,deleted_at,NULL',
+        ];
+    }
+
+    public function store(Request $request) 
     {
         $validData = $this->validate($request, $this->rulesStore());
         $self = $this;
@@ -29,7 +39,7 @@ class GenreController extends BasicCrudController
         return $entity;
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id) 
     {
         $entity = $this->findOrFail($id);
         $validData = $this->validate($request, $this->rulesUpdate());
@@ -45,11 +55,12 @@ class GenreController extends BasicCrudController
 
     protected function handleRelations($entity, Request $request) {
         $entity->categories()->sync($request->get('categories_id'));
+        $entity->genres()->sync($request->get('genres_id'));
     }
 
     protected function model()
     {
-        return Genre::class;
+        return Video::class;
     }
 
     protected function rulesStore()

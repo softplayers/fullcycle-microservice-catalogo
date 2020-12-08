@@ -15,16 +15,6 @@ class CastMemberUnitTest extends TestCase
 {
     private $castMember;
 
-    public static function setUpBeforeClass(): void
-    {
-      parent::setUpBeforeClass();
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-      parent::tearDownAfterClass();
-    }
-
     protected function setUp(): void
     {
       parent::setUp();

@@ -14,16 +14,6 @@ class GenreUnitTest extends TestCase
 {
     private $genre;
 
-    public static function setUpBeforeClass(): void
-    {
-      parent::setUpBeforeClass();
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-      parent::tearDownAfterClass();
-    }
-
     protected function setUp(): void
     {
       parent::setUp();
