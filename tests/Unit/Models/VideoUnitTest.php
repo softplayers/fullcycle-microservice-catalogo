@@ -46,7 +46,7 @@ class VideoUnitTest extends TestCase
     {
       $expected = [
         'id' => 'string',
-        'opened' => 'boolean',
+        'opened' => 'bool',
         'year_launched' => 'integer',
         'duration' => 'integer'
       ];
