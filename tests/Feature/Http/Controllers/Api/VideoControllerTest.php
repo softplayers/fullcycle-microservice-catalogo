@@ -212,7 +212,7 @@ class VideoControllerTest extends TestCase
                 $files
         );
         $response->assertStatus(201);
-        $id = $response->json('data.id');
+        $id = $response->json('id');
 
         foreach ($files as $file) {
             \Storage::assertExists("$id/{$file->hashName()}");
