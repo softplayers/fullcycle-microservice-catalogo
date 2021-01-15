@@ -12,7 +12,7 @@ trait TestValidations
     protected abstract function routeUpdate();
     */
 
-    protected function assertInvalidInStoreAction(
+    protected function assertInvalidationInStoreAction(
         array $data,
         string $rule,
         $ruleParams = []
@@ -22,7 +22,7 @@ trait TestValidations
         $this->assertInvalidFields($response, $fields, $rule, $ruleParams);
     }
     
-    protected function assertInvalidInUpdateAction(
+    protected function assertInvalidationInUpdateAction(
         array $data,
         string $rule,
         $ruleParams = []

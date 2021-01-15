@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Uuid;
 use App\Models\Traits\UploadFiles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,7 +10,7 @@ use Illuminate\Http\Request;
 
 class Video extends Model
 {
-    use SoftDeletes, Traits\Uuid, UploadFiles;
+    use SoftDeletes, Uuid, UploadFiles;
 
     const NO_RATING = 'L';
     const RATING_LIST = [self::NO_RATING, '10', '12', '14', '16', '18'];

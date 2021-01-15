@@ -50,40 +50,40 @@ class GenreControllerTest extends TestCase
             'name' => '',
             'categories_id' => ''
         ];
-        $this->assertInvalidInStoreAction($data, 'required');
-        $this->assertInvalidInUpdateAction($data, 'required');
+        $this->assertInvalidationInStoreAction($data, 'required');
+        $this->assertInvalidationInUpdateAction($data, 'required');
 
         $data = [
             'name' => str_repeat('a', 256),
         ];
-        $this->assertInvalidInStoreAction($data, 'max.string', ['max' => 255]);
-        $this->assertInvalidInUpdateAction($data, 'max.string', ['max' => 255]);
+        $this->assertInvalidationInStoreAction($data, 'max.string', ['max' => 255]);
+        $this->assertInvalidationInUpdateAction($data, 'max.string', ['max' => 255]);
 
         $data = [
             'is_active' => 'a'
         ];
-        $this->assertInvalidInStoreAction($data, 'boolean');
-        $this->assertInvalidInUpdateAction($data, 'boolean');
+        $this->assertInvalidationInStoreAction($data, 'boolean');
+        $this->assertInvalidationInUpdateAction($data, 'boolean');
 
         $data = [
             'categories_id' => 'a'
         ];
-        $this->assertInvalidInStoreAction($data, 'array');
-        $this->assertInvalidInUpdateAction($data, 'array');
+        $this->assertInvalidationInStoreAction($data, 'array');
+        $this->assertInvalidationInUpdateAction($data, 'array');
 
         $data = [
             'categories_id' => [100]
         ];
-        $this->assertInvalidInStoreAction($data, 'exists');
-        $this->assertInvalidInUpdateAction($data, 'exists');
+        $this->assertInvalidationInStoreAction($data, 'exists');
+        $this->assertInvalidationInUpdateAction($data, 'exists');
 
         $category = factory(Category::class)->create();
         $category->delete();
         $data = [
             'categories_id' => [$category->id]
         ];
-        $this->assertInvalidInStoreAction($data, 'exists');
-        $this->assertInvalidInUpdateAction($data, 'exists');
+        $this->assertInvalidationInStoreAction($data, 'exists');
+        $this->assertInvalidationInUpdateAction($data, 'exists');
     }
 
     public function testStore()

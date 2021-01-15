@@ -49,14 +49,14 @@ class CastMemberControllerTest extends TestCase
             'name' => '',
             'type' => ''
         ];
-        $this->assertInvalidInStoreAction($data, 'required');
-        $this->assertInvalidInUpdateAction($data, 'required');
+        $this->assertInvalidationInStoreAction($data, 'required');
+        $this->assertInvalidationInUpdateAction($data, 'required');
         
         $data = [
             'type' => 'x'
         ];
-        $this->assertInvalidInStoreAction($data, 'in');
-        $this->assertInvalidInUpdateAction($data, 'in');
+        $this->assertInvalidationInStoreAction($data, 'in');
+        $this->assertInvalidationInUpdateAction($data, 'in');
     }
 
     public function testStore()
