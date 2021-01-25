@@ -69,7 +69,7 @@ class VideoControllerUploadsTest extends BaseVideoControllerTestCase
 
         $response->assertStatus(201);
         $this->assertFilesOnPersist($response, $files);
-        $video = Video::find($response->json('data.id'));
+        $video = Video::find($response->json('id'));
         $this->assertIfFileUrlExists($video, $response);
     }
 
@@ -87,7 +87,7 @@ class VideoControllerUploadsTest extends BaseVideoControllerTestCase
         $response->assertStatus(200);
         $this->assertFilesOnPersist($response, $files);
 
-        $video = Video::find($response->json('data.id'));
+        $video = Video::find($response->json('id'));
         $this->assertIfFileUrlExists($video, $response);
 
         $newFiles = [
@@ -104,7 +104,7 @@ class VideoControllerUploadsTest extends BaseVideoControllerTestCase
         $response->assertStatus(200);
         $this->assertFilesOnPersist($response, \Arr::except($files, ['thumb_file', 'video_file']) + $newFiles);
 
-        $id = $response->json('data.id');
+        $id = $response->json('id');
         $video = Video::find($id);
 
         \Storage::assertMissing($video->relativeFilePath($files['thumb_file']->hashName()));
@@ -113,7 +113,7 @@ class VideoControllerUploadsTest extends BaseVideoControllerTestCase
 
     protected function assertFilesOnPersist(TestResponse $response, $files)
     {
-        $id = $response->json('id') ?? $response->json('data.id');
+        $id = $response->json('id') ?? $response->json('id');
         $video = Video::find($id);
         $this->assertfilesExistsInStorage($video, $files);
     }

@@ -46,8 +46,12 @@ abstract class BaseVideoControllerTestCase extends TestCase
     protected function assertIfFileUrlExists(Video $video, TestResponse $response)
     {
         $fileFields = Video::$fileFields;
+        /*
         $data = $response->json('data');
         $data = array_key_exists(0, $data) ? $data[0] : $data;
+        */
+        $data = $response->json();
+
         foreach ($fileFields as $field) {
             $file = $video->{$field};
             $this->assertEquals(

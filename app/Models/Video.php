@@ -33,6 +33,13 @@ class Video extends Model
         'trailer_file',
     ];
 
+    protected $appends = [
+        'video_file_url',
+        'thumb_file_url',
+        'banner_file_url',
+        'trailer_file_url',
+    ];
+
     protected $dates = ['deleted_at'];
 
     protected $casts = [
