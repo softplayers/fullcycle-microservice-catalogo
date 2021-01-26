@@ -5,7 +5,7 @@ use App\Models\Genre;
 use App\Models\Video;
 use Illuminate\Database\Seeder;
 
-class VideoSeeder extends Seeder
+class VideoTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,6 +14,9 @@ class VideoSeeder extends Seeder
      */
     public function run()
     {
+        $dir = \Storage::getDriver()->getAdapter()->getPathPrefix();
+        \File::deletedDirectory($dir, true);
+
         $genres = Genre::all();
         factory(Video::class, 100)
             ->create()
