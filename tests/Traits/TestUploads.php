@@ -41,8 +41,6 @@ trait TestUploads
 
     protected function assertFilesExistsInStorage($model, array $files)
     {
-        /** @var UploadedFile $model */
-        //        dd($files);
         foreach ($files as $file) {
             \Storage::assertExists($model->relativeFilePath($file->hashName()));
         }

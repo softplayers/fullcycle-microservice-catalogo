@@ -2,17 +2,11 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
-use App\Http\Controllers\Api\GenreController;
-use App\Http\Controllers\Api\VideoController;
 use App\Models\Category;
 use App\Models\Genre;
 use App\Models\Video;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Tests\Exceptions\TestException;
 use Tests\TestCase;
 use Tests\Traits\TestSaves;
 use Tests\Traits\TestUploads;
@@ -212,7 +206,7 @@ class VideoControllerTest extends TestCase
                 $files
         );
         $response->assertStatus(201);
-        $id = $response->json('id');
+        $id = $response->json('data.id');
 
         foreach ($files as $file) {
             \Storage::assertExists("$id/{$file->hashName()}");
