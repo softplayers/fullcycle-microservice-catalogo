@@ -82,10 +82,8 @@ class Video extends Model
             $saved = parent::update($attributes, $options);
             static::handleRelations($this, $attributes);
 
-            if($saved){
-                //uploads aqui
+            if ($saved){
                 $this->uploadFiles($files);
-                //excluir os antigos
 
             }
             \DB::commit();
