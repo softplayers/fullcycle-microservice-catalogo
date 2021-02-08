@@ -1,10 +1,25 @@
 import * as React from 'react';
-import {AppBar, Toolbar} from '@material-ui/core';
+import { AppBar, Toolbar, Typography, Button, makeStyles} from '@material-ui/core';
+import logo from '../../static/img/logo.png';
+
+const useStyles = makeStyles({
+  toolbar: {
+    backgroundColor: '#000'
+  },
+  title: {
+    flexGrow: 1,
+    textAlign: 'center'
+  }
+});
 
 export const Navbar: React.FC = () => {
+  const classes = useStyles();
   return (
     <AppBar>
-      <Toolbar>Teste</Toolbar>
+      <Toolbar className={classes.toolbar} >
+        <Typography className={classes.title}><img src={logo} alt=""></img></Typography>
+        <Button color="inherit">Login</Button>
+      </Toolbar>
     </AppBar>
   );
 };
