@@ -1,12 +1,19 @@
+import { Box } from '@material-ui/core';
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import {Navbar} from './components/Navbar'
-import { Button } from '@material-ui/core';
+import { Navbar } from './components/Navbar';
+import { Page } from './components/Page';
 
 function App() {
   return (
-    <Navbar></Navbar>
+    <React.Fragment>
+      <Navbar></Navbar>
+      <Box paddingTop={'70px'}>
+        <Page title='Categorias'>
+          Conteúdo
+        </Page>
+      </Box>
+    </React.Fragment>
   );
 }
 
