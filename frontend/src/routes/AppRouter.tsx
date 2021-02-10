@@ -1,6 +1,4 @@
-import * as React from 'react';
-
-import { Switch, Router, Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import routes from './index';
 
 export const AppRouter = () => {
@@ -9,7 +7,7 @@ export const AppRouter = () => {
             {
                 routes.map(
                     (route, key) => {
-                        <Route 
+                        return <Route 
                             key={key}
                             path={route.path}
                             component={route.component}
