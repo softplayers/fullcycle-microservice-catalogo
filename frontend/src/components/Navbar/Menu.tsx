@@ -1,6 +1,7 @@
 import { IconButton, Menu as MenuMui, MenuItem } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import routes from '../../routes';
 
 export const Menu = () => {
@@ -8,7 +9,7 @@ export const Menu = () => {
   const routeList = ['dashboard', 'categories.list'];
 
   const menuRoutes = routes.filter(route => routeList.includes(route.name));
-  
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -33,14 +34,12 @@ export const Menu = () => {
         anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
         transformOrigin={{vertical: 'top', horizontal: 'center'}}
         getContentAnchorEl={null}>
-        <MenuItem onClick={handleClose}>Categorias</MenuItem>
-        <MenuItem onClick={handleClose}>Videos</MenuItem>
         { 
           routeList.map(
             (routeName, key) => {
-              const route = menuRoutes.find(r => r.name === routeName);
+              const route = menuRoutes.find(r => r.name === routeName) as any;
               return (
-                <MenuItem component={route.component} to={route.path as string} onClick={handleClose}>
+                <MenuItem key={key} component={Link} to={route.path as string} onClick={handleClose}>
                   {route.label}
                 </MenuItem>
               );
