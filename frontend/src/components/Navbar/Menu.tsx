@@ -2,7 +2,7 @@ import { IconButton, Menu as MenuMui, MenuItem } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import routes from '../../routes';
+import routes, {MyRouteProps} from '../../routes';
 
 export const Menu = () => {
 
@@ -37,7 +37,7 @@ export const Menu = () => {
         { 
           routeList.map(
             (routeName, key) => {
-              const route = menuRoutes.find(r => r.name === routeName) as any;
+              const route = menuRoutes.find(r => r.name === routeName) as MyRouteProps;
               return (
                 <MenuItem key={key} component={Link} to={route.path as string} onClick={handleClose}>
                   {route.label}
