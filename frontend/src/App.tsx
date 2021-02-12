@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './App.css';
 import { Navbar } from './components/Navbar';
 import AppRouter from './routes/AppRouter';
+import Breadcrumbs from './components/Breadcrumbs';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <BrowserRouter>
         <Navbar></Navbar>
         <Box paddingTop={'70px'}>
+          <Breadcrumbs/>
           <AppRouter/>
         </Box>
       </BrowserRouter>
