@@ -8,6 +8,8 @@ import { Route } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import {Location} from 'history';
 import routes from '../routes';
+import RouterParser from 'route-parser';
+import {Container} from '@material-ui/core';
 
 const breadcrumbNameMap: { [key: string]: string } = {};
 routes.forEach(route => breadcrumbNameMap[route.path as string] = route.label);
@@ -17,15 +19,16 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       display: 'flex',
       flexDirection: 'column',
-      width: 360,
     },
-    lists: {
-      backgroundColor: theme.palette.background.paper,
-      marginTop: theme.spacing(1),
-    },
-    nested: {
-      paddingLeft: theme.spacing(4),
-    },
+    linkRouter: {
+      color: '#4db5ab',
+      '&:focus, &active': {
+        color: '#4db5ab'
+      },
+      '&:hover': {
+        color: '#05a52',
+      }
+    }
   }),
 );
 
@@ -42,6 +45,7 @@ export default function Breadcrumbs() {
   function makeBreadcrumbs(location: Location) {
     const pathnames = location.pathname.split('/').filter(x => x);
     pathnames.unshift('/');
+    console.log('[Breadcrumb]', pathnames, location.pathname)
 
     return (
       <MuiBreadcrumbs aria-label="breadcrumb">
@@ -49,6 +53,8 @@ export default function Breadcrumbs() {
           pathnames.map((value, index) => {
             const last = index === pathnames.length - 1;
             const to = `/${pathnames.slice(0, index + 1).join('/')}`;
+            const route = Object.keys(breadcrumbNameMap).find(path => new RouterParser(path).match(to));
+            console.log('route', route)
 
             return last ? (
               <Typography color="textPrimary" key={to}>
@@ -66,13 +72,13 @@ export default function Breadcrumbs() {
   }
 
   return (
-    <div className={classes.root}>
+    <Container>
       <Route>
         {
           ({location}: {location: Location}) => makeBreadcrumbs(location)
         }
       </Route>
-    </div>
+    </Container>
   );
 
 }
