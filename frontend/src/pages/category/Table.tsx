@@ -29,6 +29,24 @@ const data = [
 type Props = {};
 
 const Table = (props: Props) => {
+
+    const [count, setCount] = React.useState(0);
+
+    React.useEffect(() => {
+        console.log('[useEffect] empty (mounted)');
+        return () => console.log('[useEffect] return (unmounted)');
+    }, []);
+
+
+    React.useEffect(() => {
+        console.log('[useEffect] count:', count);
+        return () => console.log('[useEffect] return (count)');
+    }, [count]);
+
+    return (
+        <button onClick={() => setCount(count+1)}>{count}</button>
+    )
+
     return (
         <MUIDataTable 
             title="Listagem de categorias"

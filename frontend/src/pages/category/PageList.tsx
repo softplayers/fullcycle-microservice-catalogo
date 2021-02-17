@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Page } from '../../components/Page';
 import AddIcon from '@material-ui/icons/Add';
 import {Link} from 'react-router-dom';
+import Table from './Table';
 
 type Props = {
     
@@ -20,6 +21,7 @@ const List = (props: Props) => {
                     to="/categories/create">
                         <AddIcon/>
                 </Fab>
+                <Table/>
             </Box>
         </Page>
     );
