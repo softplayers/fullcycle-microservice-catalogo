@@ -45,7 +45,7 @@ const Table = (props: Props) => {
 
     return (
         <button onClick={() => setCount(count+1)}>{count}</button>
-    )
+    );
 
     return (
         <MUIDataTable 

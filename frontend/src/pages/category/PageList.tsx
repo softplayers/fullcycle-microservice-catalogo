@@ -13,6 +13,7 @@ type Props = {
 const List = (props: Props) => {
     return (
         <Page title='Listagem de Categoria'>
+            <Table/>
             <Box dir={'rtl'}>
                 <Fab 
                     title="Adicionar categoria"
@@ -21,7 +22,6 @@ const List = (props: Props) => {
                     to="/categories/create">
                         <AddIcon/>
                 </Fab>
-                <Table/>
             </Box>
         </Page>
     );
