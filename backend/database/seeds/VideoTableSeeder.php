@@ -15,7 +15,7 @@ class VideoTableSeeder extends Seeder
     public function run()
     {
         $dir = \Storage::getDriver()->getAdapter()->getPathPrefix();
-        \File::deletedDirectory($dir, true);
+        \File::deleteDirectory($dir, true);
 
         $genres = Genre::all();
         factory(Video::class, 100)
