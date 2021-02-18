@@ -31,7 +31,7 @@ type Props = {};
 
 const Table = (props: Props) => {
 
-    const [data, setData] = React.useState(0);
+    const [data, setData] = React.useState([]);
 
     React.useEffect(() => {
         httpVideo.get('categories').then(
