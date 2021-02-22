@@ -6,7 +6,7 @@ import routes, {MyRouteProps} from '../../routes';
 
 export const Menu = () => {
 
-  const routeList = ['dashboard', 'categories.list'];
+  const routeList = ['dashboard', 'categories.list', 'genres.list', 'cast_members.list'];
 
   const menuRoutes = routes.filter(route => routeList.includes(route.name));
 
