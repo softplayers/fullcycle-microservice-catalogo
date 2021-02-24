@@ -52,9 +52,13 @@ export default function Breadcrumbs() {
         {
           pathnames.map((value, index) => {
             const last = index === pathnames.length - 1;
-            const to = `/${pathnames.slice(0, index + 1).join('/')}`;
+            const to = `${pathnames.slice(0, index + 1).join('/').replace('//', '/')}`;
             const route = Object.keys(breadcrumbNameMap).find(path => new RouterParser(path).match(to));
             console.log('route', route)
+
+            if (route === undefined) {
+              return false;
+            }
 
             return last ? (
               <Typography color="textPrimary" key={to}>
