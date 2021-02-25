@@ -5,6 +5,7 @@ import * as React from 'react';
 import {httpVideo} from '../../util/http';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
+import categoryHttp from '../../util/http/category-http';
 
 const columnsDefinition: MUIDataTableColumn[] = [
     {
@@ -47,7 +48,7 @@ const Table = (props: Props) => {
     const [data, setData] = React.useState([]);
 
     React.useEffect(() => {
-        httpVideo.get('categories').then(
+        categoryHttp.list().then(
             response => setData(response.data.data)
         );
     }, []);
