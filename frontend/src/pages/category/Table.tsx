@@ -41,16 +41,20 @@ const columnsDefinition: MUIDataTableColumn[] = [
     {name: 'teste6', is_active: true, created_at: "2021-02-22"},
 ]
  */
+interface Category {
+    id: string;
+    name: string;
+}
+
 type Props = {};
 
 const Table = (props: Props) => {
 
-    const [data, setData] = React.useState([]);
+    const [data, setData] = React.useState<Category[]>([]);
 
     React.useEffect(() => {
-        categoryHttp.list().then(
-            response => setData(response.data.data)
-        );
+        categoryHttp.list<{data: Category[]}>().then(
+            ({data}) => setData(data.data));
     }, []);
 
     return (
