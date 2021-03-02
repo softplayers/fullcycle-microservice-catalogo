@@ -5,7 +5,7 @@ import {Box, Button, ButtonProps, Checkbox, makeStyles, TextField, Theme} from '
 const useStyles = makeStyles((theme: Theme) => {
     return {
         submit: {
-            maring: theme.spacing(1)
+            margin: theme.spacing(1)
         }
     }
 });
