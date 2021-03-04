@@ -1,17 +1,18 @@
 // @flow 
 import * as React from 'react';
-import {Box, Button, ButtonProps, Checkbox, makeStyles, TextField, Theme} from '@material-ui/core';
+import { useForm } from "react-hook-form";
+
+import { Box, Button, ButtonProps, Checkbox, makeStyles, TextField, Theme } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) => {
     return {
         submit: {
-            maring: theme.spacing(1)
+            margin: theme.spacing(1)
         }
     }
 });
 
 export const Form = () => {
-
     const classes = useStyles();
 
     const buttonProps: ButtonProps = {
@@ -19,13 +20,19 @@ export const Form = () => {
         variant: "outlined",
     }
 
+    const { register, handleSubmit, watch, errors } = useForm();
+    const onSubmit = data => console.log(data);
+
+    console.log(watch("example")); // watch input value by passing the name of it
+
     return (
-        <form>
+        <form onSubmit={handleSubmit(onSubmit)}>
             <TextField
                 name="name"
                 label="Nome"
                 fullWidth
                 variant={"outlined"}
+                ref={register}
             />
             <TextField
                 name="description"
@@ -35,14 +42,16 @@ export const Form = () => {
                 fullWidth
                 variant={"outlined"}
                 margin={"normal"}
+                ref={register}
             />
             <Checkbox
                 name="is_active"
+                ref={register}
             />
             Ativo?
             <Box dir={'rtl'}>
-                <Button {...buttonProps}>Salvar e continuar editando</Button>
-                <Button {...buttonProps}>Salvar</Button>
+                <Button {...buttonProps} type="submit">Salvar e continuar editando</Button>
+                <Button {...buttonProps} type="button">Salvar</Button>
             </Box>
         </form>
     )
