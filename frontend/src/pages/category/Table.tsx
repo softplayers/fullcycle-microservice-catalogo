@@ -2,7 +2,6 @@
 import {Chip} from '@material-ui/core';
 import MUIDataTable, {MUIDataTableColumn} from 'mui-datatables';
 import * as React from 'react';
-import {httpVideo} from '../../util/http';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import categoryHttp from '../../util/http/category-http';
