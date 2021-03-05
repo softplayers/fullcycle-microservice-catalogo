@@ -20,18 +20,23 @@ const useStyles = makeStyles((theme: Theme) => {
     submit: {
       margin: theme.spacing(1),
     },
+    formControl: {
+      margin: theme.spacing(1),
+    },
   };
 });
 
 export const Form = () => {
   const classes = useStyles();
 
-  let categories: Category[] = [
-    {id:'0', name:'Teste'}
-  ];
-  categoryHttp.list<{data: Category[]}>().then(response => {
-    categories = response.data.data;
-  });
+  const [selectedCategories, setSelectedCategories] = React.useState([]);
+  const [allCategories, setAllCategories] = React.useState([] as Category[]);
+
+  React.useEffect(() => {
+      categoryHttp
+        .list<{data: Category[]}>()
+        .then(response => setAllCategories(response.data.data));
+  }, []);  
 
   const buttonProps: ButtonProps = {
     className: classes.submit,
@@ -44,9 +49,14 @@ export const Form = () => {
     },
   });
 
+  const handleCategoryChange = (event) => {
+    setSelectedCategories(event.target.value);
+  };
+
   const onSubmit = (data, event) => {
-    console.log(data, event);
-    genreHttp.create(data).then((response) => console.log(response));
+    genreHttp
+      .create({...data, categories_id: selectedCategories})
+      .then((response) => console.log(response));
   };
 
   return (
@@ -58,20 +68,25 @@ export const Form = () => {
         variant={"outlined"}
         inputRef={register}
       />
+
       <Select
         name="category_id"
         label="Categorias"
+        variant={"outlined"}
+        value={selectedCategories}
+        onChange={handleCategoryChange}
         fullWidth
-        multiple
-        inputRef={register}>
-          {categories.map(category => (
-              <MenuItem key={category.id}>
+        multiple>
+          {allCategories.map(category => (
+              <MenuItem key={category.id} value={category.id}>
                 {category.name}
               </MenuItem>
           ))}
       </Select>
+
       <Checkbox name="is_active" inputRef={register} defaultChecked />
       Ativo?
+
       <Box dir={"rtl"}>
         <Button
           {...buttonProps}
