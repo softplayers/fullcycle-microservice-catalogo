@@ -12,14 +12,18 @@ const theme = createMuiTheme({
     },
     background: {
       default: '#f5f5f5',
-      paper:  '#dddddd'
+      paper: '#dddddd'
     }
   },
-  overrides: {},
   typography: {
     fontSize: 12,
   },
   spacing: 2,
+  overrides: {
+    MuiDataTable: {
+
+    }
+  },
 });
 
 export default theme;
