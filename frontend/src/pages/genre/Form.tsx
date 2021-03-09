@@ -77,6 +77,9 @@ export const Form = () => {
         onChange={handleCategoryChange}
         fullWidth
         multiple>
+          <MenuItem value="" disabled>
+            Selecione as categorias
+          </MenuItem>
           {allCategories.map(category => (
               <MenuItem key={category.id} value={category.id}>
                 {category.name}
