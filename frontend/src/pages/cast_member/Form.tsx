@@ -64,7 +64,7 @@ export const Form = () => {
             </FormControl>
 
             <Box dir={'rtl'}>
-                <Button {...buttonProps} type="button" onClick={() => onSubmit(getValues(), null)}>Salvar</Button>
+                <Button {...buttonProps} type="button" onClick={() => onSubmit(getValues(), null)} color="primary">Salvar</Button>
                 <Button {...buttonProps} type="submit">Salvar e continuar editando</Button>
             </Box>
         </form>
