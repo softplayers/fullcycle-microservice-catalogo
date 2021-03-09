@@ -15,7 +15,11 @@ const theme = createMuiTheme({
       paper:  '#dddddd'
     }
   },
-  overrides: {}
+  overrides: {},
+  typography: {
+    fontSize: 12,
+  },
+  spacing: 2,
 });
 
 export default theme;

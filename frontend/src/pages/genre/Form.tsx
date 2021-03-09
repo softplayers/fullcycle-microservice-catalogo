@@ -95,6 +95,7 @@ export const Form = () => {
           {...buttonProps}
           type="button"
           onClick={() => onSubmit(getValues(), null)}
+          color="primary"
         >
           Salvar
         </Button>
