@@ -40,7 +40,7 @@ export const Form = () => {
 
   const buttonProps: ButtonProps = {
     className: classes.submit,
-    variant: "outlined",
+    variant: "contained",
   };
 
   const { register, handleSubmit, getValues } = useForm({
@@ -94,6 +94,7 @@ export const Form = () => {
         <Button
           {...buttonProps}
           type="button"
+          color="primary"
           onClick={() => onSubmit(getValues(), null)}
         >
           Salvar
