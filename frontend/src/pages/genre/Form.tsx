@@ -96,7 +96,6 @@ export const Form = () => {
           type="button"
           color="primary"
           onClick={() => onSubmit(getValues(), null)}
-          color="primary"
         >
           Salvar
         </Button>
