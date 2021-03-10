@@ -13,15 +13,18 @@ type Props = {
 const List = (props: Props) => {
     return (
         <Page title='Listagem de Gêneros'>
-            <Table/>
-            <Box dir={'rtl'}>
+            <Box dir={'rtl'} paddingBottom={2}>
                 <Fab 
                     title="Adicionar gênero"
                     size="small"
+                    color="secondary"
                     component={Link}
                     to="/genres/create">
                         <AddIcon/>
                 </Fab>
+            </Box>
+            <Box>
+                <Table />
             </Box>
         </Page>
     );
