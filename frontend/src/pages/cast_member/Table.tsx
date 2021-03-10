@@ -1,5 +1,4 @@
 // @flow 
-import {Chip} from '@material-ui/core';
 import MUIDataTable, {MUIDataTableColumn} from 'mui-datatables';
 import * as React from 'react';
 import {httpVideo} from '../../util/http';

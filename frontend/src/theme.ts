@@ -1,7 +1,6 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 import { PaletteOptions, SimplePaletteColorOptions } from '@material-ui/core/styles/createPalette';
-import purple from '@material-ui/core/colors/purple';
-import green from '@material-ui/core/colors/green';
+import { purple, green, red, blue } from '@material-ui/core/colors';
 
 const palette: PaletteOptions = {
   primary: {
@@ -13,7 +12,13 @@ const palette: PaletteOptions = {
   background: {
     default: '#f5f5f5',
     paper:  '#dddddd'
-  }
+  },
+  success: {
+    main: blue[500],
+  },
+  error: {
+    main: red[500],
+  },
 }
 
 const theme = createMuiTheme({
