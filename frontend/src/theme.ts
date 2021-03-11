@@ -8,6 +8,7 @@ const palette: PaletteOptions = {
   },
   secondary: {
     main: green[500],
+    dark: '#05a52'
   },
   background: {
     default: '#f5f5f5',
