@@ -22,10 +22,10 @@ export const Form = () => {
         variant: "contained",
     }
 
-    const { register, handleSubmit, getValues } = useForm({
+    const { register, handleSubmit, getValues, errors } = useForm({
         defaultValues: {
             is_active: true,
-        }
+        }        
     });
     const onSubmit = (data, event) => {
         console.log(data, event);
@@ -34,6 +34,8 @@ export const Form = () => {
             .then(response => console.log(response));
     }
 
+    console.log(errors);
+
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <TextField
@@ -41,8 +43,9 @@ export const Form = () => {
                 label="Nome"
                 fullWidth
                 variant={"outlined"}
-                inputRef={register}
+                inputRef={register({ required: 'Campo requerido', maxLength: { value: 2, message: 'Máximo de caracteres é 2' } })}
             />
+            
             <TextField
                 name="description"
                 label="Descrição"
