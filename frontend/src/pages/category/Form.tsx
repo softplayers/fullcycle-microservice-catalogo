@@ -13,6 +13,12 @@ const useStyles = makeStyles((theme: Theme) => {
     }
 });
 
+interface IFormInputs {
+    name: string
+    description: string
+    is_active: boolean
+  }
+
 export const Form = () => {
     const classes = useStyles();
 
@@ -22,7 +28,7 @@ export const Form = () => {
         variant: "contained",
     }
 
-    const { register, handleSubmit, getValues, errors } = useForm({
+    const { register, handleSubmit, getValues, errors } = useForm<IFormInputs>({
         defaultValues: {
             is_active: true,
         }        
@@ -45,7 +51,11 @@ export const Form = () => {
                 variant={"outlined"}
                 inputRef={register({ required: 'Campo requerido', maxLength: { value: 2, message: 'Máximo de caracteres é 2' } })}
             />
-            {errors.name && errors.name.type === 'required' && (<p>errors.name.message</p>)}
+            {
+                errors.name && errors.name.type === 'required' && 
+                (<p>{errors.name?.message}</p>)
+            }
+            
             <TextField
                 name="description"
                 label="Descrição"
