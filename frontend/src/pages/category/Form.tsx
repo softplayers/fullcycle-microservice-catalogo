@@ -45,7 +45,7 @@ export const Form = () => {
                 variant={"outlined"}
                 inputRef={register({ required: 'Campo requerido', maxLength: { value: 2, message: 'Máximo de caracteres é 2' } })}
             />
-            
+            {errors.name && errors.name.type === 'required' && (<p>errors.name.message</p>)}
             <TextField
                 name="description"
                 label="Descrição"
