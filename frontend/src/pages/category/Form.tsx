@@ -43,7 +43,7 @@ export const Form = () => {
     console.log(errors);
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)}> 
             <TextField
                 name="name"
                 label="Nome"
