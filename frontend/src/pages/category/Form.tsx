@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 
 import { Box, Button, ButtonProps, Checkbox, makeStyles, TextField, Theme } from '@material-ui/core';
 import categoryHttp from '../../util/http/category-http';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 const useStyles = makeStyles((theme: Theme) => {
     return {
@@ -12,6 +14,15 @@ const useStyles = makeStyles((theme: Theme) => {
         }
     }
 });
+
+
+const validationSchema = yup.object().shape({
+    name: yup
+        .string()
+        .label('Nome')
+        .required(),
+})
+
 
 interface IFormInputs {
     name: string
@@ -29,6 +40,7 @@ export const Form = () => {
     }
 
     const { register, handleSubmit, getValues, errors } = useForm<IFormInputs>({
+        resolver: yupResolver(validationSchema),
         defaultValues: {
             is_active: true,
         }        
@@ -50,6 +62,8 @@ export const Form = () => {
                 fullWidth
                 variant={"outlined"}
                 inputRef={register({ required: 'Campo requerido', maxLength: { value: 2, message: 'Máximo de caracteres é 2' } })}
+                error={!!errors.name}
+                helperText={errors.name?.message}
             />
             {
                 errors.name && errors.name.type === 'required' && 
