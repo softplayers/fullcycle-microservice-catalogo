@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { Box, Button, ButtonProps, Checkbox, makeStyles, TextField, Theme } from '@material-ui/core';
 import categoryHttp from '../../util/http/category-http';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import * as yup from '../../util/vendor/yup';
 
 const useStyles = makeStyles((theme: Theme) => {
     return {
@@ -61,7 +61,7 @@ export const Form = () => {
                 label="Nome"
                 fullWidth
                 variant={"outlined"}
-                inputRef={register({ required: 'Campo requerido', maxLength: { value: 2, message: 'Máximo de caracteres é 2' } })}
+                inputRef={register}
                 error={!!errors.name}
                 helperText={errors.name?.message}
             />
