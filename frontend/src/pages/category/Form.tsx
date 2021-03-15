@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { useForm } from "react-hook-form";
 
-import { Box, Button, ButtonProps, Checkbox, makeStyles, TextField, Theme } from '@material-ui/core';
+import { Box, Button, ButtonProps, Checkbox, FormControlLabel, makeStyles, TextField, Theme } from '@material-ui/core';
 import categoryHttp from '../../util/http/category-http';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from '../../util/vendor/yup';
@@ -40,7 +40,7 @@ export const Form = () => {
         variant: "contained",
     }
 
-    const { register, handleSubmit, getValues, errors, reset } = useForm<IFormInputs>({
+    const { register, handleSubmit, getValues, setValue, errors, reset, watch } = useForm<IFormInputs>({
         resolver: yupResolver(validationSchema),
         defaultValues: {
             is_active: true,
@@ -61,6 +61,10 @@ export const Form = () => {
             });
     }, []);
 
+    React.useEffect(() => {
+        register({name: 'is_active'});
+    }, [register]);
+
     const onSubmit = (data, event) => {
         console.log(data, event);
         const http = category 
@@ -69,8 +73,6 @@ export const Form = () => {
 
         http.then(response => console.log(response));
     }
-
-    console.log(errors);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}> 
@@ -100,12 +102,20 @@ export const Form = () => {
                 inputRef={register}
                 InputLabelProps={{shrink: true}}
             />
-            <Checkbox
-                name="is_active"
-                inputRef={register}
-                defaultChecked
+
+            <FormControlLabel
+                control={
+                    <Checkbox
+                        name="is_active"
+                        color="primary"
+                        onChange={() => setValue('is_active', !getValues()['is_active'])}
+                        checked={watch('is_active')}
+                    />
+                }
+                label="Ativo?"
+                labelPlacement="end"
             />
-            Ativo?
+
             <Box dir={'rtl'}>
                 <Button {...buttonProps} type="button" onClick={() => onSubmit(getValues(), null)} color="primary">Salvar</Button>
                 <Button {...buttonProps} type="submit">Salvar e continuar editando</Button>
