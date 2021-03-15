@@ -34,31 +34,35 @@ interface IFormInputs {
 export const Form = () => {
     const classes = useStyles();
 
-    const buttonProps: ButtonProps = {
-        className: classes.submit,
-        color: 'secondary',
-        variant: "contained",
-    }
-
     const { register, handleSubmit, getValues, setValue, errors, reset, watch } = useForm<IFormInputs>({
         resolver: yupResolver(validationSchema),
         defaultValues: {
             is_active: true,
-        }        
+        }
     });
 
     const {id} = useParams<any>();
     const [category, setCategory] = React.useState<{id: string} | null>(null);
+    const [loading, setLoading] = React.useState<boolean>(false);
+
+    const buttonProps: ButtonProps = {
+        className: classes.submit,
+        color: 'secondary',
+        variant: "contained",
+        disabled: loading,
+    }
 
     React.useEffect(() => {
         if (!id) return;
+        setLoading(true);
 
         categoryHttp
             .get(id)
             .then(({data}) => {
                 setCategory(data.data);
                 reset(data.data);
-            });
+            })
+            .finally(() => setLoading(false));
     }, []);
 
     React.useEffect(() => {
@@ -67,11 +71,15 @@ export const Form = () => {
 
     const onSubmit = (data, event) => {
         console.log(data, event);
+        setLoading(true);
+
         const http = category 
             ? categoryHttp.update(category.id, data) 
             : categoryHttp.create(data);
 
-        http.then(response => console.log(response));
+        http
+            .then(response => console.log(response))
+            .finally(() => setLoading(false));
     }
 
     return (
@@ -82,6 +90,7 @@ export const Form = () => {
                 fullWidth
                 variant={"outlined"}
                 inputRef={register}
+                disabled={loading}
                 error={!!errors.name}
                 helperText={errors.name?.message}
                 InputLabelProps={{shrink: true}}
@@ -99,11 +108,13 @@ export const Form = () => {
                 fullWidth
                 variant={"outlined"}
                 margin={"normal"}
+                disabled={loading}
                 inputRef={register}
                 InputLabelProps={{shrink: true}}
             />
 
             <FormControlLabel
+                disabled={loading}
                 control={
                     <Checkbox
                         name="is_active"
