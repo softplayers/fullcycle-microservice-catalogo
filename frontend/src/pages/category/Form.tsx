@@ -6,6 +6,7 @@ import { Box, Button, ButtonProps, Checkbox, makeStyles, TextField, Theme } from
 import categoryHttp from '../../util/http/category-http';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from '../../util/vendor/yup';
+import { useParams } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => {
     return {
@@ -28,7 +29,7 @@ interface IFormInputs {
     name: string
     description: string
     is_active: boolean
-  }
+}
 
 export const Form = () => {
     const classes = useStyles();
@@ -39,17 +40,34 @@ export const Form = () => {
         variant: "contained",
     }
 
-    const { register, handleSubmit, getValues, errors } = useForm<IFormInputs>({
+    const { register, handleSubmit, getValues, errors, reset } = useForm<IFormInputs>({
         resolver: yupResolver(validationSchema),
         defaultValues: {
             is_active: true,
         }        
     });
+
+    const {id} = useParams<any>();
+    const [category, setCategory] = React.useState<{id: string} | null>(null);
+
+    React.useEffect(() => {
+        if (!id) return;
+
+        categoryHttp
+            .get(id)
+            .then(({data}) => {
+                setCategory(data.data);
+                reset(data.data);
+            });
+    }, []);
+
     const onSubmit = (data, event) => {
         console.log(data, event);
-        categoryHttp
-            .create(data)
-            .then(response => console.log(response));
+        const http = category 
+            ? categoryHttp.update(category.id, data) 
+            : categoryHttp.create(data);
+
+        http.then(response => console.log(response));
     }
 
     console.log(errors);
@@ -64,6 +82,7 @@ export const Form = () => {
                 inputRef={register}
                 error={!!errors.name}
                 helperText={errors.name?.message}
+                InputLabelProps={{shrink: true}}
             />
             {
                 errors.name && errors.name.type === 'required' && 
@@ -79,6 +98,7 @@ export const Form = () => {
                 variant={"outlined"}
                 margin={"normal"}
                 inputRef={register}
+                InputLabelProps={{shrink: true}}
             />
             <Checkbox
                 name="is_active"
