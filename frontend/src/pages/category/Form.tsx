@@ -6,7 +6,7 @@ import { Box, Button, ButtonProps, Checkbox, FormControlLabel, makeStyles, TextF
 import categoryHttp from '../../util/http/category-http';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from '../../util/vendor/yup';
-import { useParams } from 'react-router';
+import { useParams, useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => {
     return {
@@ -33,6 +33,7 @@ interface IFormInputs {
 
 export const Form = () => {
     const classes = useStyles();
+    const history = useHistory();
 
     const { register, handleSubmit, getValues, setValue, errors, reset, watch } = useForm<IFormInputs>({
         resolver: yupResolver(validationSchema),
@@ -41,8 +42,8 @@ export const Form = () => {
         }
     });
 
-    const {id} = useParams<any>();
-    const [category, setCategory] = React.useState<{id: string} | null>(null);
+    const { id } = useParams<any>();
+    const [category, setCategory] = React.useState<{ id: string } | null>(null);
     const [loading, setLoading] = React.useState<boolean>(false);
 
     const buttonProps: ButtonProps = {
@@ -58,7 +59,7 @@ export const Form = () => {
 
         categoryHttp
             .get(id)
-            .then(({data}) => {
+            .then(({ data }) => {
                 setCategory(data.data);
                 reset(data.data);
             })
@@ -66,24 +67,39 @@ export const Form = () => {
     }, []);
 
     React.useEffect(() => {
-        register({name: 'is_active'});
+        register({ name: 'is_active' });
     }, [register]);
 
     const onSubmit = (data, event) => {
         console.log(data, event);
         setLoading(true);
 
-        const http = category 
-            ? categoryHttp.update(category.id, data) 
+        const http = category
+            ? categoryHttp.update(category.id, data)
             : categoryHttp.create(data);
 
         http
-            .then(response => console.log(response))
+            .then(({ data }) => {
+                const hasEvent = !!event;
+                const hasId = !!id;
+
+                if (!hasEvent) {
+                    history.push(`/categories`);
+                    return;
+                }
+
+                if (id) {
+                    history.replace(`/categories/${data.data.id}/edit`)
+                    return;
+                }
+
+                history.push(`/categories/${data.data.id}/edit`);
+            })
             .finally(() => setLoading(false));
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}> 
+        <form onSubmit={handleSubmit(onSubmit)}>
             <TextField
                 name="name"
                 label="Nome"
@@ -93,13 +109,13 @@ export const Form = () => {
                 disabled={loading}
                 error={!!errors.name}
                 helperText={errors.name?.message}
-                InputLabelProps={{shrink: true}}
+                InputLabelProps={{ shrink: true }}
             />
             {
-                errors.name && errors.name.type === 'required' && 
+                errors.name && errors.name.type === 'required' &&
                 (<p>{errors.name?.message}</p>)
             }
-            
+
             <TextField
                 name="description"
                 label="Descrição"
@@ -110,7 +126,7 @@ export const Form = () => {
                 margin={"normal"}
                 disabled={loading}
                 inputRef={register}
-                InputLabelProps={{shrink: true}}
+                InputLabelProps={{ shrink: true }}
             />
 
             <FormControlLabel
