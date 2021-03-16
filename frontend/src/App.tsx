@@ -6,20 +6,22 @@ import { Navbar } from './components/Navbar';
 import AppRouter from './routes/AppRouter';
 import Breadcrumbs from './components/Breadcrumbs';
 import theme from './theme';
-
+import { SnackbarProvider } from './components/SnackbarProvider';
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <React.Fragment>
-        <BrowserRouter>
-          <Navbar></Navbar>
-          <Box paddingTop={'70px'}>
-            <Breadcrumbs />
-            <AppRouter />
-          </Box>
-        </BrowserRouter>
-      </React.Fragment>
+      <SnackbarProvider>
+        <CssBaseline />
+        <React.Fragment>
+          <BrowserRouter>
+            <Navbar></Navbar>
+            <Box paddingTop={'70px'}>
+              <Breadcrumbs />
+              <AppRouter />
+            </Box>
+          </BrowserRouter>
+        </React.Fragment>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 }

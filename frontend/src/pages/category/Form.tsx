@@ -7,6 +7,7 @@ import categoryHttp from '../../util/http/category-http';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from '../../util/vendor/yup';
 import { useParams, useHistory } from 'react-router';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme: Theme) => {
     return {
@@ -34,6 +35,7 @@ interface IFormInputs {
 export const Form = () => {
     const classes = useStyles();
     const history = useHistory();
+    const snackbar = useSnackbar();
 
     const { register, handleSubmit, getValues, setValue, errors, reset, watch } = useForm<IFormInputs>({
         resolver: yupResolver(validationSchema),
@@ -81,7 +83,7 @@ export const Form = () => {
         http
             .then(({ data }) => {
                 const hasEvent = !!event;
-                const hasId = !!id;
+                snackbar.enqueueSnackbar('Categoria salva com sucesso!', { variant: 'success' });
 
                 if (!hasEvent) {
                     history.push(`/categories`);
@@ -94,6 +96,10 @@ export const Form = () => {
                 }
 
                 history.push(`/categories/${data.data.id}/edit`);
+            })
+            .catch(error => {
+                console.error(error);
+                snackbar.enqueueSnackbar('Erro ao salvar!', { variant: 'error' });
             })
             .finally(() => setLoading(false));
     }
