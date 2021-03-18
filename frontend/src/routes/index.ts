@@ -63,9 +63,16 @@ const routes: MyRouteProps[] = [
         exact: true
     },
     {
-        name: 'genres.list',
+        name: 'genres.create',
         label: 'Criar Gêneros',
         path: '/genres/create',
+        component: GenreForm,
+        exact: true
+    },
+    {
+        name: 'genres.edit',
+        label: 'Criar Gêneros',
+        path: '/genres/:id/edit',
         component: GenreForm,
         exact: true
     },

@@ -40,15 +40,6 @@ const columnsDefinition: MUIDataTableColumn[] = [
     },
 ]
 
-/* const data = [
-    {name: 'teste1', is_active: true, created_at: "2021-02-17"},
-    {name: 'teste2', is_active: true, created_at: "2021-02-18"},
-    {name: 'teste3', is_active: true, created_at: "2021-02-19"},
-    {name: 'teste4', is_active: true, created_at: "2021-02-20"},
-    {name: 'teste5', is_active: true, created_at: "2021-02-21"},
-    {name: 'teste6', is_active: true, created_at: "2021-02-22"},
-]
- */
 type Props = {};
 
 const Table = (props: Props) => {
