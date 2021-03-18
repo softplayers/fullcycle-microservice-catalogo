@@ -34,14 +34,18 @@ interface Category {
 interface Genre {
   name: string,
   is_active: boolean,
-  categories: Category[],
+  categories_id: string[],
 }
 
 const validationSchema = yup.object().shape({
   name: yup
-      .string()
-      .label('Nome')
-      .required(),
+    .string()
+    .label('Nome')
+    .required(),
+  categories_id: yup
+    .array(yup.string())
+    .label('Categories')
+    .required(),
 })
 
 export const Form = () => {
@@ -59,7 +63,7 @@ export const Form = () => {
 
   const { id } = useParams<any>();
   const [genre, setGenre] = React.useState<{ id: string } | null>(null);
-  const [selectedCategories, setSelectedCategories] = React.useState([]);
+  // const [selectedCategories, setSelectedCategories] = React.useState([]);
   const [allCategories, setAllCategories] = React.useState([] as Category[]);
   const [loading, setLoading] = React.useState<boolean>(false);
 
@@ -91,9 +95,9 @@ export const Form = () => {
       .then(({ data }) => {
         console.log('[Genre] useEffect start .. id .. data:', data);
         setGenre(data.data);
-        const categories_id = data.data.categories.map(c => c.id);
-        setSelectedCategories(categories_id);
         reset(data.data);
+        //const categories_id = data.data.categories.map(c => c.id);
+        //reset({...data.data, categories_id});
       })
       .finally(() => setLoading(false));
 
@@ -101,15 +105,19 @@ export const Form = () => {
 
   React.useEffect(() => {
     register({ name: 'is_active' });
+    register({ name: 'categories_id' });
   }, [register]);
 
   const handleCategoryChange = (event) => {
-    setSelectedCategories(event.target.value);
+    console.log('[Genre] handleCategoryChange', event);
+    // setSelectedCategories(event.target.value);    
+    setValue('categories_id', event.target.value)
   };
 
   const onSubmit = (data, event) => {
     console.log('[Genre] onSubmit');
-    const data_categories = {...data, categories_id: selectedCategories}
+    // const data_categories = {...data, categories_id: selectedCategories}
+    const data_categories = data
     console.log(data_categories, event);
     setLoading(true);
 
@@ -161,13 +169,14 @@ export const Form = () => {
         (<p>{errors.name?.message}</p>)
       }
 
-      <Select
-        name="category_id"
+      <Select 
+        name="categories_id"
         label="Categorias"
         variant={"outlined"}
-        value={selectedCategories}
+        value={null}
         onChange={handleCategoryChange}
         disabled={loading}
+        error={!!errors.categories_id}
         fullWidth
         multiple>
           <MenuItem value="" disabled>
@@ -179,6 +188,12 @@ export const Form = () => {
               </MenuItem>
           ))}
       </Select>
+      <p>Cats: {watch('categories_id')}</p>
+      
+      {/*
+        errors.categories_id &&
+        (<p>{errors.categories_id.message}</p>)
+      */}
 
       <FormControlLabel
         disabled={loading}
