@@ -109,7 +109,7 @@ export const Form = () => {
                 console.error(error);
                 snackbar.enqueueSnackbar('Erro ao salvar!', { variant: 'error' });
             })
-            .finally(() => setLoading(!false));
+            .finally(() => setLoading(false));
     }
 
     return (
