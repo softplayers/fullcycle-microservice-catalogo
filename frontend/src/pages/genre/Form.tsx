@@ -45,7 +45,7 @@ const validationSchema = yup.object().shape({
   categories_id: yup
     .array(yup.string())
     .label('Categories')
-    .required(),
+    .min(1),
 })
 
 export const Form = () => {
@@ -57,13 +57,13 @@ export const Form = () => {
     resolver: yupResolver(validationSchema),
     defaultValues: {
         is_active: true,
+        categories_id: [],
     }
   });
 
 
   const { id } = useParams<any>();
   const [genre, setGenre] = React.useState<{ id: string } | null>(null);
-  // const [selectedCategories, setSelectedCategories] = React.useState([]);
   const [allCategories, setAllCategories] = React.useState([] as Category[]);
   const [loading, setLoading] = React.useState<boolean>(false);
 
@@ -94,10 +94,10 @@ export const Form = () => {
       .get(id)
       .then(({ data }) => {
         console.log('[Genre] useEffect start .. id .. data:', data);
-        setGenre(data.data);
-        reset(data.data);
-        //const categories_id = data.data.categories.map(c => c.id);
-        //reset({...data.data, categories_id});
+        const categories_id = data.data.categories.map(c => c.id);
+        const data_categories = {...data.data, categories_id};
+        setGenre(data_categories);
+        reset(data_categories);
       })
       .finally(() => setLoading(false));
 
@@ -110,7 +110,6 @@ export const Form = () => {
 
   const handleCategoryChange = (event) => {
     console.log('[Genre] handleCategoryChange', event);
-    // setSelectedCategories(event.target.value);    
     setValue('categories_id', event.target.value)
   };
 
@@ -161,19 +160,18 @@ export const Form = () => {
         inputRef={register}
         disabled={loading}
         error={!!errors.name}
-        helperText={errors.name?.message}
         InputLabelProps={{ shrink: true }}
       />
       {
         errors.name?.message &&
-        (<p>{errors.name?.message}</p>)
+        (<p>{errors.name.message}</p>)
       }
 
       <Select 
         name="categories_id"
         label="Categorias"
         variant={"outlined"}
-        value={null}
+        value={watch('categories_id')} 
         onChange={handleCategoryChange}
         disabled={loading}
         error={!!errors.categories_id}
@@ -188,12 +186,10 @@ export const Form = () => {
               </MenuItem>
           ))}
       </Select>
-      <p>Cats: {watch('categories_id')}</p>
-      
-      {/*
+      {
         errors.categories_id &&
-        (<p>{errors.categories_id.message}</p>)
-      */}
+        (<p>{(errors.categories_id as any).message}</p>)
+      }
 
       <FormControlLabel
         disabled={loading}
