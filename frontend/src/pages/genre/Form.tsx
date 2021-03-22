@@ -75,7 +75,7 @@ export const Form = () => {
   };
 
   React.useEffect(() => {
-    let isSubscribed = false;
+    let isSubscribed = true;
 
     (async () => {
       console.log('[Genre] useEffect start');
