@@ -56,7 +56,7 @@ export const Form = () => {
   const { register, handleSubmit, getValues, setValue, errors, reset, watch } = useForm<Genre>({
     resolver: yupResolver(validationSchema),
     defaultValues: {
-        is_active: true,
+      is_active: true,
     }
   });
 
@@ -75,33 +75,46 @@ export const Form = () => {
   };
 
   React.useEffect(() => {
-    console.log('[Genre] useEffect start');
-    setLoading(true);
+    let isSubscribed = false;
 
-    categoryHttp
-        .list<{data: Category[]}>()
-        .then(response => setAllCategories(response.data.data));
+    (async () => {
+      console.log('[Genre] useEffect start');
+      setLoading(true);
 
-    if (!id) {
-      console.log('[Genre] useEffect start .. no id');
-      setLoading(false);
-      return;
-    };
+      const promises = [categoryHttp.list()];
 
-    console.log('[Genre] useEffect start .. id:', id);
+      if (id) {
+        promises.push(genreHttp.get(id));
+      }
 
-    genreHttp
-      .get(id)
-      .then(({ data }) => {
-        console.log('[Genre] useEffect start .. id .. data:', data);
-        setGenre(data.data);
-        reset(data.data);
-        //const categories_id = data.data.categories.map(c => c.id);
-        //reset({...data.data, categories_id});
-      })
-      .finally(() => setLoading(false));
+      try {
+        const [categoriesResponse, genreResponse] = await Promise.all(promises);
 
-  }, []);  
+        if (!isSubscribed) {
+          return;
+        }
+
+        setAllCategories(categoriesResponse.data.data);
+
+        if (id) {
+          setGenre(genreResponse.data.data);
+          reset(genreResponse.data.data);
+          // const categories_id = data.data.categories.map(c => c.id);
+          // reset({...data.data, categories_id});
+        }
+
+      } catch (error) {
+        console.error(error);
+        snackbar.enqueueSnackbar(
+          'Não foi possível carregar as informações',
+          { variant: 'error' }
+        );
+      } finally {
+        setLoading(false);
+      }
+    })();
+    return () => { isSubscribed = false };
+  }, []);
 
   React.useEffect(() => {
     register({ name: 'is_active' });
@@ -122,33 +135,33 @@ export const Form = () => {
     setLoading(true);
 
     const http = genre
-        ? genreHttp.update(genre.id, data_categories)
-        : genreHttp.create(data_categories);
+      ? genreHttp.update(genre.id, data_categories)
+      : genreHttp.create(data_categories);
 
     http
-        .then(({ data }) => {
-          console.log('[Genre] onSubmit .. data:', data);
-            snackbar.enqueueSnackbar('Gënero salvo com sucesso!', { variant: 'success' });
+      .then(({ data }) => {
+        console.log('[Genre] onSubmit .. data:', data);
+        snackbar.enqueueSnackbar('Gënero salvo com sucesso!', { variant: 'success' });
 
-            setTimeout(() => {
-              if (!event) {
-                history.push(`/genres`);
-                return;
-              }
+        setTimeout(() => {
+          if (!event) {
+            history.push(`/genres`);
+            return;
+          }
 
-              if (id) {
-                history.replace(`/genres/${data.data.id}/edit`)
-                return;
-              }
-              
-              history.push(`/genres`);
-            })
+          if (id) {
+            history.replace(`/genres/${data.data.id}/edit`)
+            return;
+          }
+
+          history.push(`/genres`);
         })
-        .catch(error => {
-            console.error(error);
-            snackbar.enqueueSnackbar('Erro ao salvar!', { variant: 'error' });
-        })
-        .finally(() => setLoading(false));
+      })
+      .catch(error => {
+        console.error(error);
+        snackbar.enqueueSnackbar('Erro ao salvar!', { variant: 'error' });
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -169,7 +182,7 @@ export const Form = () => {
         (<p>{errors.name?.message}</p>)
       }
 
-      <Select 
+      <Select
         name="categories_id"
         label="Categorias"
         variant={"outlined"}
@@ -179,17 +192,17 @@ export const Form = () => {
         error={!!errors.categories_id}
         fullWidth
         multiple>
-          <MenuItem value="" disabled>
-            Selecione as categorias
+        <MenuItem value="" disabled>
+          Selecione as categorias
           </MenuItem>
-          {allCategories.map(category => (
-              <MenuItem key={category.id} value={category.id}>
-                {category.name}
-              </MenuItem>
-          ))}
+        {allCategories.map(category => (
+          <MenuItem key={category.id} value={category.id}>
+            {category.name}
+          </MenuItem>
+        ))}
       </Select>
       <p>Cats: {watch('categories_id')}</p>
-      
+
       {/*
         errors.categories_id &&
         (<p>{errors.categories_id.message}</p>)
