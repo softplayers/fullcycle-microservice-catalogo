@@ -52,8 +52,14 @@ const Table = (props: Props) => {
     const [data, setData] = React.useState<Category[]>([]);
 
     React.useEffect(() => {
-        categoryHttp.list<{data: Category[]}>().then(
-            ({data}) => setData(data.data));
+        let isSubscribed = true;
+
+        categoryHttp.list<{data: Category[]}>()
+            .then(({data}) => isSubscribed && setData(data.data));
+
+        return () => {
+            isSubscribed = false
+        };
     }, []);
 
     return (
