@@ -1,22 +1,14 @@
 // @flow 
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Checkbox, FormControlLabel, TextField } from '@material-ui/core';
+import { useSnackbar } from 'notistack';
 import * as React from 'react';
 import { useForm } from "react-hook-form";
-
-import { Box, Button, ButtonProps, Checkbox, FormControlLabel, makeStyles, TextField, Theme } from '@material-ui/core';
+import { useHistory, useParams } from 'react-router';
+import SubmitActions from '../../components/SubmitActions';
 import categoryHttp from '../../util/http/category-http';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { Category } from '../../util/models';
 import * as yup from '../../util/vendor/yup';
-import { useParams, useHistory } from 'react-router';
-import { useSnackbar } from 'notistack';
-import {Category} from '../../util/models';
-
-const useStyles = makeStyles((theme: Theme) => {
-    return {
-        submit: {
-            margin: theme.spacing(1)
-        }
-    }
-});
 
 
 const validationSchema = yup.object().shape({
@@ -34,11 +26,10 @@ interface IFormInputs {
 }
 
 export const Form = () => {
-    const classes = useStyles();
     const history = useHistory();
     const snackbar = useSnackbar();
 
-    const { register, handleSubmit, getValues, setValue, errors, reset, watch } = useForm<IFormInputs>({
+    const { register, handleSubmit, getValues, setValue, errors, reset, watch, trigger } = useForm<IFormInputs>({
         resolver: yupResolver(validationSchema),
         defaultValues: {
             is_active: true,
@@ -48,13 +39,6 @@ export const Form = () => {
     const { id } = useParams<any>();
     const [category, setCategory] = React.useState<Category | null>(null);
     const [loading, setLoading] = React.useState<boolean>(false);
-
-    const buttonProps: ButtonProps = {
-        className: classes.submit,
-        color: 'secondary',
-        variant: "contained",
-        disabled: loading,
-    }
 
     React.useEffect(() => {
         if (!id) return;
@@ -150,10 +134,12 @@ export const Form = () => {
                 labelPlacement="end"
             />
 
-            <Box dir={'rtl'}>
-                <Button {...buttonProps} type="button" onClick={() => onSubmit(getValues(), null)} color="primary">Salvar</Button>
-                <Button {...buttonProps} type="submit">Salvar e continuar editando</Button>
-            </Box>
+            <SubmitActions disabledButtons={loading} handleSave={() =>
+                trigger().then(isValid => {
+                    isValid && onSubmit(getValues(), null)
+                })
+            }></SubmitActions>
+
         </form>
     )
 }

@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import { useForm } from "react-hook-form";
-
+import SubmitActions from '../../components/SubmitActions';
 import {
   Box, Button, ButtonProps,
   Checkbox, makeStyles, TextField,
@@ -14,13 +14,10 @@ import * as yup from '../../util/vendor/yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useParams, useHistory } from 'react-router';
 import { useSnackbar } from 'notistack';
-import {Genre, Category} from '../../util/models';
+import { Genre, Category } from '../../util/models';
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
-    submit: {
-      margin: theme.spacing(1),
-    },
     formControl: {
       margin: theme.spacing(1),
     },
@@ -43,7 +40,7 @@ export const Form = () => {
   const history = useHistory();
   const snackbar = useSnackbar();
 
-  const { register, handleSubmit, getValues, setValue, errors, reset, watch } = useForm({
+  const { register, handleSubmit, getValues, setValue, errors, reset, watch, trigger } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: {
       name: null,
@@ -58,12 +55,6 @@ export const Form = () => {
   const [allCategories, setAllCategories] = React.useState([] as Category[]);
   const [loading, setLoading] = React.useState<boolean>(false);
 
-  const buttonProps: ButtonProps = {
-    className: classes.submit,
-    color: 'secondary',
-    variant: "contained",
-    disabled: loading,
-  };
 
   React.useEffect(() => {
     let isSubscribed = true;
@@ -208,19 +199,11 @@ export const Form = () => {
         labelPlacement="end"
       />
 
-      <Box dir={"rtl"}>
-        <Button
-          {...buttonProps}
-          type="button"
-          color="primary"
-          onClick={() => onSubmit(getValues(), null)}
-        >
-          Salvar
-        </Button>
-        <Button {...buttonProps} type="submit">
-          Salvar e continuar editando
-        </Button>
-      </Box>
+      <SubmitActions disabledButtons={loading} handleSave={() =>
+        trigger().then(isValid => {
+          isValid && onSubmit(getValues(), null)
+        })
+      }></SubmitActions>
     </form>
   );
 };

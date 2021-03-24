@@ -1,25 +1,17 @@
 // @flow 
-import { Box, Button, ButtonProps, makeStyles, TextField, Theme } from '@material-ui/core';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { TextField } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import { useSnackbar } from 'notistack';
 import * as React from 'react';
 import { useForm } from "react-hook-form";
-import { useParams, useHistory } from 'react-router';
+import { useHistory, useParams } from 'react-router';
+import SubmitActions from '../../components/SubmitActions';
 import castMemberHttp from '../../util/http/cast-member-http';
+import { CastMember } from '../../util/models';
 import * as yup from '../../util/vendor/yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import {CastMember} from '../../util/models';
-
-
-const useStyles = makeStyles((theme: Theme) => {
-    return {
-        submit: {
-            margin: theme.spacing(1)
-        }
-    }
-});
 
 const validationSchema = yup.object().shape({
     name: yup
@@ -33,15 +25,13 @@ interface IFormInputs {
     type: number
 }
 
-
 export const Form = () => {
-    const classes = useStyles();
     const history = useHistory();
     const snackbar = useSnackbar();
 
     //const [value, setValue] = React.useState('1');   
 
-    const { register, handleSubmit, getValues, setValue, errors, reset, watch } = useForm<IFormInputs>({
+    const { register, handleSubmit, getValues, setValue, errors, reset, watch, trigger } = useForm<IFormInputs>({
         resolver: yupResolver(validationSchema),
         defaultValues: {
             type: 1
@@ -51,13 +41,6 @@ export const Form = () => {
     const { id } = useParams<any>();
     const [castMember, setCastMember] = React.useState<CastMember | null>(null);
     const [loading, setLoading] = React.useState<boolean>(false);
-
-    const buttonProps: ButtonProps = {
-        className: classes.submit,
-        color: 'secondary',
-        variant: "contained",
-        disabled: loading
-    }
 
     React.useEffect(() => {
         if (!id) return;
@@ -137,18 +120,19 @@ export const Form = () => {
                         name="type"
                         value={watch('type')}
                         onChange={handleRadio}>
-                        <FormControlLabel value={1} control={<Radio />} label="Diretor"  disabled={loading} />
-                        <FormControlLabel value={2} control={<Radio />} label="Ator"  disabled={loading}/>
+                        <FormControlLabel value={1} control={<Radio />} label="Diretor" disabled={loading} />
+                        <FormControlLabel value={2} control={<Radio />} label="Ator" disabled={loading} />
                     </RadioGroup>
                 }
                 label="Tipo"
                 labelPlacement="top"
             />
 
-            <Box dir={'rtl'}>
-                <Button {...buttonProps} type="button" onClick={() => onSubmit(getValues(), null)} color="primary">Salvar</Button>
-                <Button {...buttonProps} type="submit">Salvar e continuar editando</Button>
-            </Box>
+            <SubmitActions disabledButtons={loading} handleSave={() =>
+                trigger().then(isValid => {
+                    isValid && onSubmit(getValues(), null)
+                })
+            }></SubmitActions>
         </form>
     )
 }
