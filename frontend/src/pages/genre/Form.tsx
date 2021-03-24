@@ -14,6 +14,7 @@ import * as yup from '../../util/vendor/yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useParams, useHistory } from 'react-router';
 import { useSnackbar } from 'notistack';
+import {Genre, Category} from '../../util/models';
 
 const useStyles = makeStyles((theme: Theme) => {
   return {
@@ -25,17 +26,6 @@ const useStyles = makeStyles((theme: Theme) => {
     },
   };
 });
-
-interface Category {
-  id: string;
-  name: string;
-}
-
-interface Genre {
-  name: string,
-  is_active: boolean,
-  categories_id: string[],
-}
 
 const validationSchema = yup.object().shape({
   name: yup
@@ -53,9 +43,10 @@ export const Form = () => {
   const history = useHistory();
   const snackbar = useSnackbar();
 
-  const { register, handleSubmit, getValues, setValue, errors, reset, watch } = useForm<Genre>({
+  const { register, handleSubmit, getValues, setValue, errors, reset, watch } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: {
+      name: null,
       is_active: true,
       categories_id: [],
     }
@@ -63,7 +54,7 @@ export const Form = () => {
 
 
   const { id } = useParams<any>();
-  const [genre, setGenre] = React.useState<{ id: string } | null>(null);
+  const [genre, setGenre] = React.useState<Genre | null>(null);
   const [allCategories, setAllCategories] = React.useState([] as Category[]);
   const [loading, setLoading] = React.useState<boolean>(false);
 

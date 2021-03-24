@@ -5,6 +5,7 @@ import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import categoryHttp from '../../util/http/category-http';
 import {BadgeYes, BadgeNo} from '../../components/Badge';
+import {Category} from '../../util/models';
 
 const columnsDefinition: MUIDataTableColumn[] = [
     {
@@ -40,10 +41,6 @@ const columnsDefinition: MUIDataTableColumn[] = [
     {name: 'teste6', is_active: true, created_at: "2021-02-22"},
 ]
  */
-interface Category {
-    id: string;
-    name: string;
-}
 
 type Props = {};
 

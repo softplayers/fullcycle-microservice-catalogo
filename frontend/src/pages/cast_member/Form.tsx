@@ -1,8 +1,6 @@
 // @flow 
 import { Box, Button, ButtonProps, makeStyles, TextField, Theme } from '@material-ui/core';
-import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import { useSnackbar } from 'notistack';
@@ -12,6 +10,8 @@ import { useParams, useHistory } from 'react-router';
 import castMemberHttp from '../../util/http/cast-member-http';
 import * as yup from '../../util/vendor/yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import {CastMember} from '../../util/models';
+
 
 const useStyles = makeStyles((theme: Theme) => {
     return {
@@ -49,7 +49,7 @@ export const Form = () => {
     });
 
     const { id } = useParams<any>();
-    const [castMember, setCastMember] = React.useState<{ id: string } | null>(null);
+    const [castMember, setCastMember] = React.useState<CastMember | null>(null);
     const [loading, setLoading] = React.useState<boolean>(false);
 
     const buttonProps: ButtonProps = {

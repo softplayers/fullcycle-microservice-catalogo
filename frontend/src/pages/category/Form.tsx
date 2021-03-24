@@ -8,6 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from '../../util/vendor/yup';
 import { useParams, useHistory } from 'react-router';
 import { useSnackbar } from 'notistack';
+import {Category} from '../../util/models';
 
 const useStyles = makeStyles((theme: Theme) => {
     return {
@@ -45,7 +46,7 @@ export const Form = () => {
     });
 
     const { id } = useParams<any>();
-    const [category, setCategory] = React.useState<{ id: string } | null>(null);
+    const [category, setCategory] = React.useState<Category | null>(null);
     const [loading, setLoading] = React.useState<boolean>(false);
 
     const buttonProps: ButtonProps = {
