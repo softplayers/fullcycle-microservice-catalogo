@@ -1,14 +1,15 @@
 // @flow 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Checkbox, FormControlLabel, TextField } from '@material-ui/core';
+import { Checkbox, FormControlLabel, Grid, TextField } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import * as React from 'react';
 import { useForm } from "react-hook-form";
 import { useHistory, useParams } from 'react-router';
-import SubmitActions from '../../components/SubmitActions';
 import categoryHttp from '../../util/http/category-http';
 import { Category } from '../../util/models';
 import * as yup from '../../util/vendor/yup';
+import SubmitActions from '../../components/SubmitActions';
+import {DefaultForm} from '../../components/DefaultForm';
 
 
 const validationSchema = yup.object().shape({
@@ -90,7 +91,8 @@ export const Form = () => {
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <DefaultForm GridItemProps={{xs: 12, md: 6}} onSubmit={handleSubmit(onSubmit)}>
+
             <TextField
                 name="name"
                 label="Nome"
@@ -140,6 +142,6 @@ export const Form = () => {
                 })
             }></SubmitActions>
 
-        </form>
+        </DefaultForm>
     )
 }
