@@ -6,6 +6,7 @@ import categoryHttp from '../../util/http/category-http';
 import {BadgeYes, BadgeNo} from '../../components/Badge';
 import {Category} from '../../util/models';
 import CustomTable, { TableColumn } from '../../components/Table';
+import { useSnackbar } from 'notistack';
 
 const columnsDefinition: TableColumn[] = [
     {
@@ -52,13 +53,30 @@ type Props = {};
 
 const Table = (props: Props) => {
 
+    const snackbar = useSnackbar();
     const [data, setData] = React.useState<Category[]>([]);
+    const [loading, setLoading] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         let isSubscribed = true;
 
-        categoryHttp.list<{data: Category[]}>()
-            .then(({data}) => isSubscribed && setData(data.data));
+        (async () => {
+            setLoading(true);
+
+            try {
+                const { data } = await categoryHttp.list<{data: Category[]}>();
+                if (isSubscribed) {
+                    setData(data.data);
+                }
+            }
+            catch(error) {
+                console.error(error);
+                snackbar.enqueueSnackbar('Não foi possivel carregar as informações', {variant: 'error'})
+            }
+            finally {
+                setLoading(false);
+            }
+        })();
 
         return () => {
             isSubscribed = false
@@ -69,7 +87,8 @@ const Table = (props: Props) => {
         <CustomTable 
             title="Listagem de categorias"
             columns={columnsDefinition}
-            data={data}>
+            data={data}
+            loading={loading}>
         </CustomTable>
     );
 };

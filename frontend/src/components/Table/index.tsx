@@ -1,7 +1,7 @@
 // @flow 
 import * as React from 'react';
 import MUIDataTable, { MUIDataTableColumn, MUIDataTableOptions, MUIDataTableProps } from 'mui-datatables';
-import { merge, omit, cloneDeep } from 'lodash';
+import _, { merge, omit, cloneDeep } from 'lodash';
 import { MuiThemeProvider, Theme, useTheme } from '@material-ui/core';
 
 export interface TableColumn extends MUIDataTableColumn {
@@ -49,12 +49,11 @@ const defaultOptions: MUIDataTableOptions = {
 };
 
 interface TableProps extends MUIDataTableProps {
-    columns: TableColumn[]
+    columns: TableColumn[];
+    loading?: boolean;
 }
 
 const Table: React.FC<TableProps> = (props) => {
-
-    const theme = cloneDeep(useTheme());
 
     function extractMuiDataTableColumns(columns: TableColumn[]): MUIDataTableColumn[]  {
         setColumnsWidth(columns);
@@ -72,15 +71,31 @@ const Table: React.FC<TableProps> = (props) => {
         });
     }
 
+    function applyLoading() {
+        const textLabels = newProps.options?.textLabels as any;
+        if (newProps.loading)
+            textLabels.noMatch = 'Carregando';
+    }
+
+    function getOriginalMuiDataTableProps() {
+        return omit(newProps, 'loading');
+    }
+
+    const theme = cloneDeep(useTheme());
+
     const newProps = merge(
         { options: defaultOptions }, 
         props,
         {columns: extractMuiDataTableColumns(props.columns)},
     );
 
+    applyLoading();
+
+    const originalProps = getOriginalMuiDataTableProps()
+
     return (
         <MuiThemeProvider theme={theme}>
-            <MUIDataTable {...newProps} />
+            <MUIDataTable {...originalProps} />
         </MuiThemeProvider>
     );
 };
