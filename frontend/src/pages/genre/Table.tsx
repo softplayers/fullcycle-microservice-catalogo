@@ -5,7 +5,7 @@ import { useSnackbar } from 'notistack';
 import * as React from 'react';
 import { BadgeNo, BadgeYes } from '../../components/Badge';
 import CustomTable, { TableColumn } from '../../components/Table';
-import genreHttp from '../../util/http/category-http';
+import genreHttp from '../../util/http/genre-http';
 import { Genre } from '../../util/models';
 
 const columnsDefinition: TableColumn[] = [
@@ -78,7 +78,7 @@ const Table = (props: Props) => {
         return () => {
             isSubscribed = false
         };
-    }, []);
+    }, [snackbar]);
 
 
     return (

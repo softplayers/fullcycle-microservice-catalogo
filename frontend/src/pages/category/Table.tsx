@@ -1,12 +1,12 @@
 // @flow 
-import * as React from 'react';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
-import categoryHttp from '../../util/http/category-http';
-import {BadgeYes, BadgeNo} from '../../components/Badge';
-import {Category} from '../../util/models';
-import CustomTable, { TableColumn } from '../../components/Table';
 import { useSnackbar } from 'notistack';
+import * as React from 'react';
+import { BadgeNo, BadgeYes } from '../../components/Badge';
+import CustomTable, { TableColumn } from '../../components/Table';
+import categoryHttp from '../../util/http/category-http';
+import { Category } from '../../util/models';
 
 const columnsDefinition: TableColumn[] = [
     {
@@ -81,7 +81,7 @@ const Table = (props: Props) => {
         return () => {
             isSubscribed = false
         };
-    }, []);
+    }, [snackbar]);
 
     return (
         <CustomTable 

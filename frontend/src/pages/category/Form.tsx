@@ -1,15 +1,15 @@
 // @flow 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Checkbox, FormControlLabel, Grid, TextField } from '@material-ui/core';
+import { Checkbox, FormControlLabel, TextField } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import * as React from 'react';
 import { useForm } from "react-hook-form";
 import { useHistory, useParams } from 'react-router';
+import { DefaultForm } from '../../components/DefaultForm';
+import SubmitActions from '../../components/SubmitActions';
 import categoryHttp from '../../util/http/category-http';
 import { Category } from '../../util/models';
 import * as yup from '../../util/vendor/yup';
-import SubmitActions from '../../components/SubmitActions';
-import {DefaultForm} from '../../components/DefaultForm';
 
 
 const validationSchema = yup.object().shape({
@@ -52,7 +52,7 @@ export const Form = () => {
                 reset(data.data);
             })
             .finally(() => setLoading(false));
-    }, []);
+    }, [id, reset]);
 
     React.useEffect(() => {
         register({ name: 'is_active' });

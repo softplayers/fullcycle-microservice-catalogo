@@ -29,8 +29,6 @@ export const Form = () => {
     const history = useHistory();
     const snackbar = useSnackbar();
 
-    //const [value, setValue] = React.useState('1');   
-
     const { register, handleSubmit, getValues, setValue, errors, reset, watch, trigger } = useForm<IFormInputs>({
         resolver: yupResolver(validationSchema),
         defaultValues: {
@@ -53,7 +51,7 @@ export const Form = () => {
                 reset(data.data);
             })
             .finally(() => setLoading(false));
-    }, []);
+    }, [id, reset]);
 
     React.useEffect(() => {
         register({ name: 'type' });

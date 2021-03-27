@@ -1,13 +1,12 @@
 // @flow 
-import MUIDataTable, {MUIDataTableColumn} from 'mui-datatables';
-import * as React from 'react';
-import {httpVideo} from '../../util/http';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
-import CustomTable, { TableColumn } from '../../components/Table';
-import { CastMember } from '../../util/models';
 import { useSnackbar } from 'notistack';
-import castMemberHttp from '../../util/http/category-http';
+import * as React from 'react';
+import CustomTable, { TableColumn } from '../../components/Table';
+import { httpVideo } from '../../util/http';
+import castMemberHttp from '../../util/http/cast-member-http';
+import { CastMember } from '../../util/models';
 
 const columnsDefinition: TableColumn[] = [
     {
@@ -19,7 +18,7 @@ const columnsDefinition: TableColumn[] = [
         label: "Tipo",
         options: {
             customBodyRender(value) {
-                return value == 1 ? "Diretor" : "Ator"
+                return value === 1 ? "Diretor" : "Ator"
             }
         }
     },
@@ -51,13 +50,6 @@ const Table = (props: Props) => {
     const [data, setData] = React.useState<CastMember[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
 
-
-    React.useEffect(() => {
-        httpVideo.get('cast_members').then(
-            response => setData(response.data.data)
-        );
-    }, []);
-
     React.useEffect(() => {
         let isSubscribed = true;
 
@@ -82,7 +74,7 @@ const Table = (props: Props) => {
         return () => {
             isSubscribed = false
         };
-    }, []);
+    }, [snackbar]);
 
 
     return (

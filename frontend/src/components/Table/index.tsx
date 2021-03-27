@@ -1,8 +1,8 @@
 // @flow 
-import * as React from 'react';
+import { MuiThemeProvider, useTheme } from '@material-ui/core';
+import { cloneDeep, merge, omit } from 'lodash';
 import MUIDataTable, { MUIDataTableColumn, MUIDataTableOptions, MUIDataTableProps } from 'mui-datatables';
-import _, { merge, omit, cloneDeep } from 'lodash';
-import { MuiThemeProvider, Theme, useTheme } from '@material-ui/core';
+import * as React from 'react';
 
 export interface TableColumn extends MUIDataTableColumn {
     width?: string;

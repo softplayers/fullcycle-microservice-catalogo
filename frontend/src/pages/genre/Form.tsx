@@ -1,28 +1,21 @@
 // @flow
+import { yupResolver } from '@hookform/resolvers/yup';
+import {
+  Checkbox,
+
+  FormControlLabel,
+  MenuItem, Select, TextField
+} from "@material-ui/core";
+import { useSnackbar } from 'notistack';
 import * as React from "react";
 import { useForm } from "react-hook-form";
+import { useHistory, useParams } from 'react-router';
 import SubmitActions from '../../components/SubmitActions';
-import {
-  Box, Button, ButtonProps,
-  Checkbox, makeStyles, TextField,
-  Theme, Select, MenuItem,
-  FormControlLabel
-} from "@material-ui/core";
-import genreHttp from "../../util/http/genre-http";
 import categoryHttp from "../../util/http/category-http";
+import genreHttp from "../../util/http/genre-http";
+import { Category, Genre } from '../../util/models';
 import * as yup from '../../util/vendor/yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useParams, useHistory } from 'react-router';
-import { useSnackbar } from 'notistack';
-import { Genre, Category } from '../../util/models';
 
-const useStyles = makeStyles((theme: Theme) => {
-  return {
-    formControl: {
-      margin: theme.spacing(1),
-    },
-  };
-});
 
 const validationSchema = yup.object().shape({
   name: yup
@@ -36,7 +29,6 @@ const validationSchema = yup.object().shape({
 })
 
 export const Form = () => {
-  const classes = useStyles();
   const history = useHistory();
   const snackbar = useSnackbar();
 
@@ -96,7 +88,7 @@ export const Form = () => {
       }
     })();
     return () => { isSubscribed = false };
-  }, []);
+  }, [id, reset, snackbar]);
 
   React.useEffect(() => {
     register({ name: 'is_active' });

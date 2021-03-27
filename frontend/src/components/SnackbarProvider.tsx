@@ -1,7 +1,7 @@
-import { colors, IconButton } from '@material-ui/core';
+import { IconButton } from '@material-ui/core';
+import CloseIcone from '@material-ui/icons/Close';
 import { SnackbarProvider as NotiSnackbarProvider, SnackbarProviderProps } from 'notistack';
-import * as  React from 'react';
-import  CloseIcone from '@material-ui/icons/Close'
+import * as React from 'react';
 
 export const SnackbarProvider: React.FC<SnackbarProviderProps> = (props) => {
     let snackbarProviderRef;
