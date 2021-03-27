@@ -55,11 +55,11 @@ interface TableProps extends MUIDataTableProps {
 
 const Table: React.FC<TableProps> = (props) => {
 
-    function extractMuiDataTableColumns(columns: TableColumn[]): MUIDataTableColumn[]  {
+    function extractMuiDataTableColumns(columns: TableColumn[]): MUIDataTableColumn[] {
         setColumnsWidth(columns);
         return columns.map(column => omit(column, 'width'));
     }
-    
+
     function setColumnsWidth(columns: TableColumn[]) {
         columns.forEach((column, key) => {
             if (column.width) {
@@ -74,7 +74,7 @@ const Table: React.FC<TableProps> = (props) => {
     function applyLoading() {
         const textLabels = newProps.options?.textLabels as any;
         if (newProps.loading)
-            textLabels.noMatch = 'Carregando';
+            textLabels.body.noMatch = 'Carregando...';
     }
 
     function getOriginalMuiDataTableProps() {
@@ -84,9 +84,9 @@ const Table: React.FC<TableProps> = (props) => {
     const theme = cloneDeep(useTheme());
 
     const newProps = merge(
-        { options: defaultOptions }, 
+        { options: cloneDeep(defaultOptions) },
         props,
-        {columns: extractMuiDataTableColumns(props.columns)},
+        { columns: extractMuiDataTableColumns(props.columns) },
     );
 
     applyLoading();
