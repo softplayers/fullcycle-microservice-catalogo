@@ -4,8 +4,12 @@ import * as React from 'react';
 import {httpVideo} from '../../util/http';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
+import CustomTable, { TableColumn } from '../../components/Table';
+import { CastMember } from '../../util/models';
+import { useSnackbar } from 'notistack';
+import castMemberHttp from '../../util/http/category-http';
 
-const columnsDefinition: MUIDataTableColumn[] = [
+const columnsDefinition: TableColumn[] = [
     {
         name: "name",
         label: "Nome",
@@ -43,7 +47,10 @@ type Props = {};
 
 const Table = (props: Props) => {
 
-    const [data, setData] = React.useState([]);
+    const snackbar = useSnackbar();
+    const [data, setData] = React.useState<CastMember[]>([]);
+    const [loading, setLoading] = React.useState<boolean>(false);
+
 
     React.useEffect(() => {
         httpVideo.get('cast_members').then(
@@ -51,12 +58,40 @@ const Table = (props: Props) => {
         );
     }, []);
 
+    React.useEffect(() => {
+        let isSubscribed = true;
+
+        (async () => {
+            setLoading(true);
+
+            try {
+                const { data } = await castMemberHttp.list<{ data: CastMember[] }>();
+                if (isSubscribed) {
+                    setData(data.data);
+                }
+            }
+            catch (error) {
+                console.error(error);
+                snackbar.enqueueSnackbar('Não foi possivel carregar as informações', { variant: 'error' })
+            }
+            finally {
+                setLoading(false);
+            }
+        })();
+
+        return () => {
+            isSubscribed = false
+        };
+    }, []);
+
+
     return (
-        <MUIDataTable 
+        <CustomTable 
             title="Listagem de membros do elenco"
             columns={columnsDefinition}
-            data={data}>
-        </MUIDataTable>
+            data={data}
+            loading={loading}>
+        </CustomTable>
     );
 };
 

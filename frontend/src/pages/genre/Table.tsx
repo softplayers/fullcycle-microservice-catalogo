@@ -1,12 +1,14 @@
 // @flow 
-import MUIDataTable, {MUIDataTableColumn} from 'mui-datatables';
-import * as React from 'react';
-import {httpVideo} from '../../util/http';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
-import {BadgeYes, BadgeNo} from '../../components/Badge';
+import { useSnackbar } from 'notistack';
+import * as React from 'react';
+import { BadgeNo, BadgeYes } from '../../components/Badge';
+import CustomTable, { TableColumn } from '../../components/Table';
+import genreHttp from '../../util/http/category-http';
+import { Genre } from '../../util/models';
 
-const columnsDefinition: MUIDataTableColumn[] = [
+const columnsDefinition: TableColumn[] = [
     {
         name: "name",
         label: "Nome",
@@ -16,6 +18,10 @@ const columnsDefinition: MUIDataTableColumn[] = [
         label: "Categorias",
         options: {
             customBodyRender(value: any[]) {
+                if(!value) {
+                    return '';
+                }
+                
                 return value.map((v: any) => v.name).join(', ');
             }
         }
@@ -44,20 +50,44 @@ type Props = {};
 
 const Table = (props: Props) => {
 
-    const [data, setData] = React.useState([]);
+    const snackbar = useSnackbar();
+    const [data, setData] = React.useState<Genre[]>([]);
+    const [loading, setLoading] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        httpVideo.get('genres').then(
-            response => setData(response.data.data)
-        );
+        let isSubscribed = true;
+
+        (async () => {
+            setLoading(true);
+
+            try {
+                const { data } = await genreHttp.list<{ data: Genre[] }>();
+                if (isSubscribed) {
+                    setData(data.data);
+                }
+            }
+            catch (error) {
+                console.error(error);
+                snackbar.enqueueSnackbar('Não foi possivel carregar as informações', { variant: 'error' })
+            }
+            finally {
+                setLoading(false);
+            }
+        })();
+
+        return () => {
+            isSubscribed = false
+        };
     }, []);
 
+
     return (
-        <MUIDataTable 
+        <CustomTable
             title="Listagem de gêneros"
             columns={columnsDefinition}
-            data={data}>
-        </MUIDataTable>
+            data={data}
+            loading={loading}>
+        </CustomTable>
     );
 };
 
