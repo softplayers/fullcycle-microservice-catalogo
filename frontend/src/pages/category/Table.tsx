@@ -1,11 +1,12 @@
 // @flow 
-import MUIDataTable, {MUIDataTableColumn} from 'mui-datatables';
+import {MUIDataTableColumn} from 'mui-datatables';
 import * as React from 'react';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import categoryHttp from '../../util/http/category-http';
 import {BadgeYes, BadgeNo} from '../../components/Badge';
 import {Category} from '../../util/models';
+import CustomTable from '../../components/Table';
 
 const columnsDefinition: MUIDataTableColumn[] = [
     {
@@ -60,11 +61,11 @@ const Table = (props: Props) => {
     }, []);
 
     return (
-        <MUIDataTable 
+        <CustomTable 
             title="Listagem de categorias"
             columns={columnsDefinition}
             data={data}>
-        </MUIDataTable>
+        </CustomTable>
     );
 };
 
