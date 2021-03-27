@@ -1,47 +1,52 @@
 // @flow 
-import {MUIDataTableColumn} from 'mui-datatables';
 import * as React from 'react';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import categoryHttp from '../../util/http/category-http';
 import {BadgeYes, BadgeNo} from '../../components/Badge';
 import {Category} from '../../util/models';
-import CustomTable from '../../components/Table';
+import CustomTable, { TableColumn } from '../../components/Table';
 
-const columnsDefinition: MUIDataTableColumn[] = [
+const columnsDefinition: TableColumn[] = [
+    {
+        name: "id",
+        label: "ID",
+        width: "30%",
+        options: {
+            sort: false
+        }
+    },
     {
         name: "name",
         label: "Nome",
+        width: "40%",
     },
     {
         name: "is_active",
         label: "Ativo?",
+        width: "5%",
         options: {
             customBodyRender(value) {
                 return value ? <BadgeYes /> : <BadgeNo />
             }
-        }
+        },
     },
     {
         name: "created_at",
         label: "Criado em",
+        width: "10%",
         options: {
             customBodyRender(value) {
                 return <span>{format(parseISO(value), 'dd/MM/yyyy')}</span>
             }
         }
     },
+    {
+        name: "actions",
+        label: "Ações",
+        width: "15%",
+    },
 ]
-
-/* const data = [
-    {name: 'teste1', is_active: true, created_at: "2021-02-17"},
-    {name: 'teste2', is_active: true, created_at: "2021-02-18"},
-    {name: 'teste3', is_active: true, created_at: "2021-02-19"},
-    {name: 'teste4', is_active: true, created_at: "2021-02-20"},
-    {name: 'teste5', is_active: true, created_at: "2021-02-21"},
-    {name: 'teste6', is_active: true, created_at: "2021-02-22"},
-]
- */
 
 type Props = {};
 
