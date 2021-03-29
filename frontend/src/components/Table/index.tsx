@@ -1,5 +1,5 @@
 // @flow 
-import { MuiThemeProvider, useTheme } from '@material-ui/core';
+import { MuiThemeProvider, useMediaQuery, useTheme } from '@material-ui/core';
 import { cloneDeep, merge, omit } from 'lodash';
 import MUIDataTable, { MUIDataTableColumn, MUIDataTableOptions, MUIDataTableProps } from 'mui-datatables';
 import * as React from 'react';
@@ -12,6 +12,7 @@ const defaultOptions: MUIDataTableOptions = {
     print: false,
     download: false,
     filter: true,
+    responsive: 'standard',
     textLabels: {
         body: {
             noMatch: 'Nenhum registro encontrado',
