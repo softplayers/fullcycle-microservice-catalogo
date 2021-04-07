@@ -1,8 +1,9 @@
 // @flow 
-import { MuiThemeProvider, useMediaQuery, useTheme } from '@material-ui/core';
+import { MuiThemeProvider, Theme, useTheme } from '@material-ui/core';
 import { cloneDeep, merge, omit } from 'lodash';
 import MUIDataTable, { MUIDataTableColumn, MUIDataTableOptions, MUIDataTableProps } from 'mui-datatables';
 import * as React from 'react';
+
 
 export interface TableColumn extends MUIDataTableColumn {
     width?: string;
@@ -49,7 +50,7 @@ const defaultOptions: MUIDataTableOptions = {
     }
 };
 
-interface TableProps extends MUIDataTableProps {
+export interface TableProps extends MUIDataTableProps {
     columns: TableColumn[];
     loading?: boolean;
 }
@@ -102,3 +103,18 @@ const Table: React.FC<TableProps> = (props) => {
 };
 
 export default Table;
+
+export function makeActionStyles(column) {
+    return (theme: Theme) => {
+        const themeCopy = cloneDeep(theme);
+
+        const selector = `&[data-colindex="${column}"]`;
+        // const selector = `&[data-testid^="MuiDataTableBodyCell-${column}"]`;
+
+        (themeCopy.overrides as any).MUIDataTableBodyCell.root[selector] = {
+            paddingTop: '0px',
+            paddingBottom: '0px'
+        };
+        return themeCopy;
+    }
+}

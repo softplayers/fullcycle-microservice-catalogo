@@ -1,10 +1,13 @@
 // @flow 
+import { IconButton, MuiThemeProvider } from '@material-ui/core';
+import EditIcon from '@material-ui/icons/Edit';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import { useSnackbar } from 'notistack';
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import { BadgeNo, BadgeYes } from '../../components/Badge';
-import CustomTable, { TableColumn } from '../../components/Table';
+import CustomTable, { makeActionStyles, TableColumn } from '../../components/Table';
 import categoryHttp from '../../util/http/category-http';
 import { Category } from '../../util/models';
 
@@ -46,12 +49,25 @@ const columnsDefinition: TableColumn[] = [
         name: "actions",
         label: "Ações",
         width: "15%",
+        options: {
+            sort: false,
+            customBodyRender: (value, tableMeta) => {
+                console.log(tableMeta);
+                return (
+                    <IconButton
+                        color='secondary'
+                        component={Link}
+                        to={`/categories/${tableMeta.rowData[0]}/edit`}
+                    >
+                        <EditIcon></EditIcon>
+                    </IconButton>
+                )
+            }
+        }
     },
 ]
 
-type Props = {};
-
-const Table = (props: Props) => {
+const Table = () => {
 
     const snackbar = useSnackbar();
     const [data, setData] = React.useState<Category[]>([]);
@@ -84,12 +100,14 @@ const Table = (props: Props) => {
     }, [snackbar]);
 
     return (
-        <CustomTable 
-            title="Listagem de categorias"
-            columns={columnsDefinition}
-            data={data}
-            loading={loading}>
-        </CustomTable>
+        <MuiThemeProvider theme={makeActionStyles(columnsDefinition.length-1)}>
+            <CustomTable 
+                title="Listagem de categorias"
+                columns={columnsDefinition}
+                data={data}
+                loading={loading}>
+            </CustomTable>
+        </MuiThemeProvider>
     );
 };
 
