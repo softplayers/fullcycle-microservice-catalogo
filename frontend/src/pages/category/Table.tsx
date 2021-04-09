@@ -11,6 +11,10 @@ import CustomTable, { makeActionStyles, TableColumn } from '../../components/Tab
 import categoryHttp from '../../util/http/category-http';
 import { Category } from '../../util/models';
 
+interface SearchState {
+    search: string;
+}
+
 const columnsDefinition: TableColumn[] = [
     {
         name: "id",
@@ -52,7 +56,6 @@ const columnsDefinition: TableColumn[] = [
         options: {
             sort: false,
             customBodyRender: (value, tableMeta) => {
-                console.log(tableMeta);
                 return (
                     <IconButton
                         color='secondary'
@@ -70,42 +73,61 @@ const columnsDefinition: TableColumn[] = [
 const Table = () => {
 
     const snackbar = useSnackbar();
+    const subscribed = React.useRef(true);
     const [data, setData] = React.useState<Category[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
+    const [searchState, setSearchState] = React.useState<SearchState>({ search: 'aaaa' });
 
     React.useEffect(() => {
-        let isSubscribed = true;
+        subscribed.current = true;
 
         (async () => {
-            setLoading(true);
-
-            try {
-                const { data } = await categoryHttp.list<{data: Category[]}>();
-                if (isSubscribed) {
-                    setData(data.data);
-                }
-            }
-            catch(error) {
-                console.error(error);
-                snackbar.enqueueSnackbar('Não foi possivel carregar as informações', {variant: 'error'})
-            }
-            finally {
-                setLoading(false);
-            }
+            getData();
         })();
 
         return () => {
-            isSubscribed = false
+            subscribed.current = false;
         };
     }, [snackbar]);
 
+    React.useEffect(() => {
+        subscribed.current = true;
+
+        getData();
+
+        return () => {
+            subscribed.current = false;
+        };
+    }, [searchState, snackbar]);
+
+    async function getData() {
+        setLoading(true);
+
+        try {
+            const { data } = await categoryHttp.list<{ data: Category[] }>({ queryParams: { search: searchState.search} });
+            if (subscribed.current) {
+                setData(data.data);
+            }
+        }
+        catch (error) {
+            console.error(error);
+            snackbar.enqueueSnackbar('Não foi possivel carregar as informações', { variant: 'error' })
+        }
+        finally {
+            setLoading(false);
+        }
+    }
     return (
-        <MuiThemeProvider theme={makeActionStyles(columnsDefinition.length-1)}>
-            <CustomTable 
+        <MuiThemeProvider theme={makeActionStyles(columnsDefinition.length - 1)}>
+            <CustomTable
                 title="Listagem de categorias"
                 columns={columnsDefinition}
                 data={data}
-                loading={loading}>
+                loading={loading}
+                options={{
+                    searchText: searchState.search,
+                    onSearchChange: (value) => setSearchState({ search: value || '' })
+                }}>
             </CustomTable>
         </MuiThemeProvider>
     );
