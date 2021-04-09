@@ -55,7 +55,7 @@ export const Form = () => {
       console.log('[Genre] useEffect start');
       setLoading(true);
 
-      const promises = [categoryHttp.list()];
+      const promises = [categoryHttp.list({queryParams: {all: ''}})];
 
       if (id) {
         promises.push(genreHttp.get(id));
