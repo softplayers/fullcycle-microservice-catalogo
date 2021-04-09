@@ -76,19 +76,7 @@ const Table = () => {
     const subscribed = React.useRef(true);
     const [data, setData] = React.useState<Category[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
-    const [searchState, setSearchState] = React.useState<SearchState>({ search: 'aaaa' });
-
-    React.useEffect(() => {
-        subscribed.current = true;
-
-        (async () => {
-            getData();
-        })();
-
-        return () => {
-            subscribed.current = false;
-        };
-    }, [snackbar]);
+    const [searchState, setSearchState] = React.useState<SearchState>({ search: '' });
 
     React.useEffect(() => {
         subscribed.current = true;
@@ -98,13 +86,13 @@ const Table = () => {
         return () => {
             subscribed.current = false;
         };
-    }, [searchState, snackbar]);
+    }, [searchState]);
 
     async function getData() {
         setLoading(true);
 
         try {
-            const { data } = await categoryHttp.list<{ data: Category[] }>({ queryParams: { search: searchState.search} });
+            const { data } = await categoryHttp.list<{ data: Category[] }>({ queryParams: { search: searchState.search } });
             if (subscribed.current) {
                 setData(data.data);
             }
@@ -117,6 +105,7 @@ const Table = () => {
             setLoading(false);
         }
     }
+
     return (
         <MuiThemeProvider theme={makeActionStyles(columnsDefinition.length - 1)}>
             <CustomTable
@@ -126,7 +115,7 @@ const Table = () => {
                 loading={loading}
                 options={{
                     searchText: searchState.search,
-                    onSearchChange: (value) => setSearchState({ search: value || '' })
+                    onSearchChange: (value) => setSearchState({ search: value as string})
                 }}>
             </CustomTable>
         </MuiThemeProvider>
