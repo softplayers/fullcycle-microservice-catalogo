@@ -4,7 +4,7 @@ namespace App\ModelFilters;
 
 use EloquentFilter\ModelFilter;
 
-class DefaultModelFilter extends ModelFilter
+abstract class DefaultModelFilter extends ModelFilter
 {
     protected $sortable = [];
 

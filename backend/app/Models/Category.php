@@ -21,6 +21,6 @@ class Category extends Model
 
     public function modelFilter()
     {
-      return $this->providerFilter(CategoryFilter::class);
+      return $this->provideFilter(CategoryFilter::class);
     }
 }
