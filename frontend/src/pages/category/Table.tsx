@@ -17,9 +17,15 @@ interface Pagination {
     per_page: number;
 }
 
+interface Order {
+    sort: string | null;
+    dir: string | null;
+}
+
 interface SearchState {
     search: string;
     pagination: Pagination;
+    order: Order;
 }
 
 const columnsDefinition: TableColumn[] = [
@@ -89,6 +95,10 @@ const Table = () => {
             page: 1,
             total: 0,
             per_page: 10,
+        },
+        order: {
+            sort: null,
+            dir: null,
         }
     });
 
@@ -104,6 +114,7 @@ const Table = () => {
         searchState.search,
         searchState.pagination.page,
         searchState.pagination.per_page,
+        searchState.order,
     ]);
 
     async function getData() {
@@ -115,6 +126,8 @@ const Table = () => {
                     search: searchState.search,
                     page: searchState.pagination.page,
                     per_page: searchState.pagination.per_page,
+                    sort: searchState.order.sort,
+                    dir: searchState.order.dir,
                 } 
             });
             if (subscribed.current) {
@@ -166,6 +179,13 @@ const Table = () => {
                         pagination: {
                             ...prevState.pagination,
                             per_page,
+                        }
+                    })), 
+                    onColumnSortChange: (changedColumn, direction) => setSearchState(prevState => ({
+                        ...prevState,
+                        order: {
+                            sort: changedColumn,
+                            dir: direction,
                         }
                     })), 
                 }}>

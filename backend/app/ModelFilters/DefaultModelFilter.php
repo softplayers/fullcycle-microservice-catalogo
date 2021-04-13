@@ -21,13 +21,14 @@ class DefaultModelFilter extends ModelFilter
 
     public function sort($column) 
     {
-        if (methos_exists($this, $method = 'sortBy' . Str::studly($column))){
+        if (method_exists($this, $method = 'sortBy' . Str::studly($column))){
             $this.$method();
+            return;
         }
 
         if ($this->isSortable($column)) {
             $dir = strtolower($this->input('dir')) == 'asc' ? 'ASC' : 'DESC';
-            $this->orderBy('created_at', 'DESC');
+            $this->orderBy($column, $dir);
         }
     }
 
