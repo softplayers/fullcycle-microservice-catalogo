@@ -163,6 +163,11 @@ return [
         Illuminate\View\ViewServiceProvider::class,
 
         /*
+         * Other service providers...
+         */
+        EloquentFilter\ServiceProvider::class,
+
+        /*
          * Package Service Providers...
          */
 

@@ -8,7 +8,7 @@ abstract class DefaultModelFilter extends ModelFilter
 {
     protected $sortable = [];
 
-    public function setup($search) 
+    public function setup() 
     {
         $this->blacklistMethod('isSortable');
 

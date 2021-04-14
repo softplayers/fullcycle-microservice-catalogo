@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Database\Eloquent\Builder;
+use EloquentFilter\Filterable;
 
 abstract class BasicCrudController extends Controller
 {
