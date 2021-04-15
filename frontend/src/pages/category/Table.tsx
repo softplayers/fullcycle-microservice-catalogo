@@ -11,6 +11,7 @@ import CustomTable, { makeActionStyles, TableColumn } from '../../components/Tab
 import categoryHttp from '../../util/http/category-http';
 import { Category, ListResponse } from '../../util/models';
 import axios from 'axios';
+import { FilterResetButton } from '../../components/Table/FilterResetButton';
 
 interface Pagination {
     page: number;
@@ -85,12 +86,7 @@ const columnsDefinition: TableColumn[] = [
 ]
 
 const Table = () => {
-
-    const snackbar = useSnackbar();
-    const subscribed = React.useRef(true);
-    const [data, setData] = React.useState<Category[]>([]);
-    const [loading, setLoading] = React.useState<boolean>(false);
-    const [searchState, setSearchState] = React.useState<SearchState>({ 
+    const initialState = {
         search: '',
         pagination: {
             page: 1,
@@ -101,7 +97,12 @@ const Table = () => {
             sort: null,
             dir: null,
         }
-    });
+    };
+    const snackbar = useSnackbar();
+    const subscribed = React.useRef(true);
+    const [data, setData] = React.useState<Category[]>([]);
+    const [loading, setLoading] = React.useState<boolean>(false);
+    const [searchState, setSearchState] = React.useState<SearchState>(initialState);
 
     React.useEffect(() => {
         subscribed.current = true;
@@ -122,14 +123,14 @@ const Table = () => {
         setLoading(true);
 
         try {
-            const { data } = await categoryHttp.list<ListResponse<Category>>({ 
-                queryParams: { 
+            const { data } = await categoryHttp.list<ListResponse<Category>>({
+                queryParams: {
                     search: searchState.search,
                     page: searchState.pagination.page,
                     per_page: searchState.pagination.per_page,
                     sort: searchState.order.sort,
                     dir: searchState.order.dir,
-                } 
+                }
             });
             if (subscribed.current) {
                 setData(data.data);
@@ -169,9 +170,18 @@ const Table = () => {
                     page: searchState.pagination.page - 1,
                     rowsPerPage: searchState.pagination.per_page,
                     count: searchState.pagination.total,
+                    customToolbar: () => (
+                        <FilterResetButton onClick={() => {
+                            setSearchState(initialState);
+                        }} />
+                    ),
                     onSearchChange: (value) => setSearchState(prevState => ({
                         ...prevState,
-                        search: value as string
+                        search: value as string,
+                        pagination: {
+                            ...prevState.pagination,
+                            page: 1,
+                        }
                     })),
                     onChangePage: (page) => setSearchState(prevState => ({
                         ...prevState,
@@ -179,21 +189,21 @@ const Table = () => {
                             ...prevState.pagination,
                             page: page + 1,
                         }
-                    })), 
+                    })),
                     onChangeRowsPerPage: (per_page) => setSearchState(prevState => ({
                         ...prevState,
                         pagination: {
                             ...prevState.pagination,
                             per_page,
                         }
-                    })), 
+                    })),
                     onColumnSortChange: (changedColumn, direction) => setSearchState(prevState => ({
                         ...prevState,
                         order: {
                             sort: changedColumn,
                             dir: direction,
                         }
-                    })), 
+                    })),
                 }}>
             </CustomTable>
         </MuiThemeProvider>
