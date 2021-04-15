@@ -10,6 +10,7 @@ import { BadgeNo, BadgeYes } from '../../components/Badge';
 import CustomTable, { makeActionStyles, TableColumn } from '../../components/Table';
 import categoryHttp from '../../util/http/category-http';
 import { Category, ListResponse } from '../../util/models';
+import axios from 'axios';
 
 interface Pagination {
     page: number;
@@ -143,6 +144,11 @@ const Table = () => {
         }
         catch (error) {
             console.error(error);
+
+            if (categoryHttp.isCancelledRequest(error)) {
+                return;
+            }
+
             snackbar.enqueueSnackbar('Não foi possivel carregar as informações', { variant: 'error' })
         }
         finally {
