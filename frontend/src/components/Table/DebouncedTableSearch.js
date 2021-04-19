@@ -45,9 +45,9 @@ const DebouncedTableSearch = ({ options, searchText, onSearch, onHide }) => {
     dispatchOnSearch(text);
   }, [text]);
 
-  const dispatchOnSearch = debounce(value => {
+  const dispatchOnSearch = React.useCallback(debounce(value => {
     onSearch(value);
-  }, 500);
+  }, 500), [])
 
   const onKeyDown = event => {
     if (event.key === 'Escape') {
