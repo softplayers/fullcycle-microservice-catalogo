@@ -10,25 +10,7 @@ import { BadgeNo, BadgeYes } from '../../components/Badge';
 import CustomTable, { makeActionStyles, TableColumn } from '../../components/Table';
 import categoryHttp from '../../util/http/category-http';
 import { Category, ListResponse } from '../../util/models';
-import axios from 'axios';
 import { FilterResetButton } from '../../components/Table/FilterResetButton';
-
-interface Pagination {
-    page: number;
-    total: number;
-    per_page: number;
-}
-
-interface Order {
-    sort: string | null;
-    dir: string | null;
-}
-
-interface SearchState {
-    search: string;
-    pagination: Pagination;
-    order: Order;
-}
 
 const INITIAL_STATE = {
     search: '',
@@ -42,7 +24,6 @@ const INITIAL_STATE = {
         dir: null,
     }
 };
-
 
 const columnsDefinition: TableColumn[] = [
     {
