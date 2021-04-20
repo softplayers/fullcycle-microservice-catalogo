@@ -125,7 +125,7 @@ const Table = () => {
         try {
             const { data } = await categoryHttp.list<ListResponse<Category>>({
                 queryParams: {
-                    search: searchState.search,
+                    search: cleanSearchText(searchState.search),
                     page: searchState.pagination.page,
                     per_page: searchState.pagination.per_page,
                     sort: searchState.order.sort,
@@ -157,6 +157,13 @@ const Table = () => {
         }
     }
 
+    function cleanSearchText(text) {
+        if (text && text.value !== undefined) {
+            return text.value;
+        }
+        return text;
+    }
+
     return (
         <MuiThemeProvider theme={makeActionStyles(columnsDefinition.length - 1)}>
             <CustomTable
@@ -164,6 +171,7 @@ const Table = () => {
                 columns={columnsDefinition}
                 data={data}
                 loading={loading}
+                debouncedSearchTime={500}
                 options={{
                     serverSide: true,
                     searchText: searchState.search,
@@ -172,7 +180,13 @@ const Table = () => {
                     count: searchState.pagination.total,
                     customToolbar: () => (
                         <FilterResetButton onClick={() => {
-                            setSearchState(initialState);
+                            setSearchState({
+                                ...initialState,
+                                search: {
+                                    value: initialState.search,
+                                    updated: true
+                                } as any
+                            });
                         }} />
                     ),
                     onSearchChange: (value) => setSearchState(prevState => ({

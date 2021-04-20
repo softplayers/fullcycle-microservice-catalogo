@@ -31,7 +31,7 @@ const useStyles = makeStyles(
 );
 
 
-const DebouncedTableSearch = ({ options, searchText, onSearch, onHide }) => {
+const DebouncedTableSearch = ({ options, searchText, onSearch, onHide, debounceTime }) => {
   const classes = useStyles();
 
   const [text, setText] = React.useState(searchText)
@@ -47,7 +47,7 @@ const DebouncedTableSearch = ({ options, searchText, onSearch, onHide }) => {
 
   const dispatchOnSearch = React.useCallback(debounce(value => {
     onSearch(value);
-  }, 500), [])
+  }, debounceTime), [])
 
   const onKeyDown = event => {
     if (event.key === 'Escape') {
