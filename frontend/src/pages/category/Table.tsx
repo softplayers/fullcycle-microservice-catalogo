@@ -11,19 +11,7 @@ import CustomTable, { makeActionStyles, TableColumn } from '../../components/Tab
 import categoryHttp from '../../util/http/category-http';
 import { Category, ListResponse } from '../../util/models';
 import { FilterResetButton } from '../../components/Table/FilterResetButton';
-
-const INITIAL_STATE = {
-    search: '',
-    pagination: {
-        page: 1,
-        total: 0,
-        per_page: 10,
-    },
-    order: {
-        sort: null,
-        dir: null,
-    }
-};
+import reducer, { Creators, INITIAL_STATE } from '../../store/search';
 
 const columnsDefinition: TableColumn[] = [
     {
@@ -80,46 +68,6 @@ const columnsDefinition: TableColumn[] = [
     },
 ]
 
-function reducer(state, action) {
-    switch(action.type) {
-        case 'search':
-            return {
-                ...state,
-                search: action.search,
-                pagination: {
-                    ...state.pagination,
-                    page: 1,
-                }
-            };
-        case 'page':
-            return {
-                ...state,
-                pagination: {
-                    ...state.pagination,
-                    page: action.page,
-                }
-            };
-        case 'per_page':
-            return {
-                ...state,
-                pagination: {
-                    ...state.pagination,
-                    per_page: action.per_page,
-                }
-            };
-        case 'order':
-            return {
-                ...state,
-                order: {
-                    sort: action.sort,
-                    dir: action.dir,
-                }
-            };
-        case 'reset': //fall-through
-        default:
-            return INITIAL_STATE;
-    }
-}
 
 const Table = () => {
     const snackbar = useSnackbar();
@@ -201,20 +149,22 @@ const Table = () => {
                 debouncedSearchTime={500}
                 options={{
                     serverSide: true,
-                    searchText: searchState.search,
+                    searchText: searchState.search as any,
                     page: searchState.pagination.page - 1,
                     rowsPerPage: searchState.pagination.per_page,
                     count: searchState.pagination.total,
                     customToolbar: () => (
-                        <FilterResetButton onClick={() => dispatch({type: 'reset'})} />
+                        <FilterResetButton onClick={() => {
+                            // dispatch({ type: 'reset' })
+                        }} />
                     ),
-                    onSearchChange: (search) => dispatch({type: 'search', search}),
-                    onChangePage: (page) => dispatch({type: 'page', page: page + 1}),
-                    onChangeRowsPerPage: (perPage) => dispatch({type: 'per_page', per_page: perPage}),
-                    onColumnSortChange: (changedColumn, dir) => dispatch({type: 'order', sort: changedColumn, dir}),
+                    onSearchChange: (search: any) => dispatch(Creators.setSearch({ search })),
+                    onChangePage: (page) => dispatch(Creators.setPage({ page: page + 1 })),
+                    onChangeRowsPerPage: (per_page) => dispatch(Creators.setPerPage({ per_page })),
+                    onColumnSortChange: (changedColumn, dir) => dispatch(Creators.setOrder({ sort: changedColumn, dir })),
                 }}>
             </CustomTable>
-        </MuiThemeProvider>
+        </MuiThemeProvider >
     );
 };
 
