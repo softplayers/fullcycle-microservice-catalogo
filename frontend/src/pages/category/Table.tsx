@@ -154,7 +154,7 @@ const Table = () => {
                     rowsPerPage: searchState.pagination.per_page,
                     count: searchState.pagination.total,
                     customToolbar: () => (
-                        <FilterResetButton onClick={() => dispatch(Creators.doReset())} />
+                        <FilterResetButton onClick={() => dispatch(Creators.setReset())} />
                     ),
                     onSearchChange: (search: any) => dispatch(Creators.setSearch({ search })),
                     onChangePage: (page) => dispatch(Creators.setPage({ page: page + 1 })),

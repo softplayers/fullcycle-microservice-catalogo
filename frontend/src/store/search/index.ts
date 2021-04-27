@@ -7,23 +7,23 @@ export const { Types, Creators } = createActions<{
     SET_PAGE: string,
     SET_PER_PAGE: string,
     SET_ORDER: string,
-    DO_RESET: string,
+    SET_RESET: string,
 }, {
     setSearch(payload: Typings.SetSearchAction['payload']): Typings.SetSearchAction,
     setPage(payload: Typings.SetPageAction['payload']): Typings.SetPageAction,
     setPerPage(payload: Typings.SetPerPageAction['payload']): Typings.SetPerPageAction,
     setOrder(payload: Typings.SetOrderAction['payload']): Typings.SetOrderAction,
-    doReset(): Typings.DoResetAction
+    setReset(): Typings.SetResetAction
 }>({
     setSearch: ['payload'],
     setPage: ['payload'],
     setPerPage: ['payload'],
     setOrder: ['payload'],
-    doReset: []
+    setReset: []
 });
 
 export const INITIAL_STATE: Typings.State = {
-    search: '',
+    search: null,
     pagination: {
         page: 1,
         total: 0,
@@ -40,7 +40,7 @@ const reducer = createReducer<Typings.State, Typings.Actions>(INITIAL_STATE, {
     [Types.SET_PAGE]: setPage,
     [Types.SET_PER_PAGE]: setPerPage,
     [Types.SET_ORDER]: setOrder,
-    [Types.DO_RESET]: doReset
+    [Types.SET_RESET]: setReset
 })
 
 export default reducer;
@@ -86,9 +86,12 @@ function setOrder(state: Typings.State, action: Typings.SetOrderAction): Typings
     }
 }
 
-function doReset(state: Typings.State, action: Typings.DoResetAction): Typings.State {
+function setReset(state: Typings.State, action: Typings.SetResetAction): Typings.State {
     return {
         ...INITIAL_STATE,
-        search: { value: '' },
+        search: { 
+            value: null,
+            update: true,
+        },
     }
 }
