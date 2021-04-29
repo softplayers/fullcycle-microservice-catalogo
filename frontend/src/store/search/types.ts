@@ -11,14 +11,14 @@ export interface Order {
 }
 
 export interface State {
-  search: string | { value, [key: string]: any } | null;
+  search: string | undefined;
   pagination: Pagination;
   order: Order;
 }
 
 export interface SetSearchAction extends AnyAction {
   payload: {
-    search: string | { value, [key: string]: any } | null
+    search: string | undefined
   }
 }
 

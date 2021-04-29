@@ -23,7 +23,7 @@ export const { Types, Creators } = createActions<{
 });
 
 export const INITIAL_STATE: Typings.State = {
-    search: null,
+    search: undefined,
     pagination: {
         page: 1,
         per_page: 10,
@@ -87,10 +87,6 @@ function setOrder(state: Typings.State, action: Typings.SetOrderAction): Typings
 
 function setReset(state: Typings.State, action: Typings.SetResetAction): Typings.State {
     return {
-        ...INITIAL_STATE,
-        search: { 
-            value: null,
-            update: true,
-        },
+        ...INITIAL_STATE
     }
 }

@@ -32,20 +32,32 @@ const useStyles = makeStyles(
 
 
 const DebouncedTableSearch = ({ options, searchText, onSearch, onHide, debounceTime }) => {
+  const subscribed = React.useRef(true);
+
   const classes = useStyles();
+  console.log('[DebouncedTableSearch]', searchText);
 
   const [text, setText] = React.useState(searchText)
 
   const handleTextChange = event => {
     const value = event.target.value;
+    console.log('[handleTextChange]', value);
     setText(value);
   };
 
   React.useEffect(() => {
+    subscribed.current = true;
+
+    console.log('[useEffect]', text);
     dispatchOnSearch(text);
+
+    return () => {
+      subscribed.current = false;
+  };
   }, [text]);
 
   const dispatchOnSearch = React.useCallback(debounce(value => {
+    console.log('[dispatchOnSearch]', value);
     onSearch(value);
   }, debounceTime), [])
 
@@ -54,12 +66,6 @@ const DebouncedTableSearch = ({ options, searchText, onSearch, onHide, debounceT
       onHide();
     }
   };
-
-
-  let value = text;
-  if (searchText && searchText.value !== undefined) {
-    value = searchText.value;
-  }
 
   return (
     <Grow appear in={true} timeout={300}>
@@ -74,7 +80,7 @@ const DebouncedTableSearch = ({ options, searchText, onSearch, onHide, debounceT
           inputProps={{
             'aria-label': options.textLabels.toolbar.search,
           }}
-          value={value || ''}
+          value={text || undefined}
           onKeyDown={onKeyDown}
           onChange={handleTextChange}
           fullWidth={true}

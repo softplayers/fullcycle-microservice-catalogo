@@ -8,10 +8,10 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { BadgeNo, BadgeYes } from '../../components/Badge';
 import CustomTable, { makeActionStyles, TableColumn } from '../../components/Table';
-import categoryHttp from '../../util/http/category-http';
-import { Category, ListResponse } from '../../util/models';
 import { FilterResetButton } from '../../components/Table/FilterResetButton';
 import reducer, { Creators, INITIAL_STATE } from '../../store/search';
+import categoryHttp from '../../util/http/category-http';
+import { Category, ListResponse } from '../../util/models';
 
 const columnsDefinition: TableColumn[] = [
     {
@@ -99,7 +99,7 @@ const Table = () => {
         try {
             const { data } = await categoryHttp.list<ListResponse<Category>>({
                 queryParams: {
-                    search: cleanSearchText(searchState.search),
+                    search: searchState.search,
                     page: searchState.pagination.page,
                     per_page: searchState.pagination.per_page,
                     sort: searchState.order.sort,
@@ -134,12 +134,10 @@ const Table = () => {
         }
     }
 
-    function cleanSearchText(text) {
-        if (text && text.value !== undefined) {
-            return text.value;
-        }
-        return text;
-    }
+    const customToolbar = () => (
+        <FilterResetButton onClick={() => {
+            dispatch(Creators.setReset());
+        }} />);
 
     return (
         <MuiThemeProvider theme={makeActionStyles(columnsDefinition.length - 1)}>
@@ -151,13 +149,11 @@ const Table = () => {
                 debouncedSearchTime={500}
                 options={{
                     serverSide: true,
-                    searchText: searchState.search as any,
+                    searchText: searchState.search,
                     page: searchState.pagination.page - 1,
                     rowsPerPage: searchState.pagination.per_page,
                     count: totalRecords,
-                    customToolbar: () => (
-                        <FilterResetButton onClick={() => dispatch(Creators.setReset())} />
-                    ),
+                    customToolbar,
                     onSearchChange: (search: any) => dispatch(Creators.setSearch({ search })),
                     onChangePage: (page) => dispatch(Creators.setPage({ page: page + 1 })),
                     onChangeRowsPerPage: (per_page) => dispatch(Creators.setPerPage({ per_page })),
