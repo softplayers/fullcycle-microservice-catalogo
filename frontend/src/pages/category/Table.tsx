@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { BadgeNo, BadgeYes } from '../../components/Badge';
 import CustomTable, { makeActionStyles, TableColumn } from '../../components/Table';
 import { FilterResetButton } from '../../components/Table/FilterResetButton';
-import reducer, { Creators, INITIAL_STATE } from '../../store/search';
+import reducer, { Creators, INITIAL_STATE } from '../../store/filter';
 import categoryHttp from '../../util/http/category-http';
 import { Category, ListResponse } from '../../util/models';
 
@@ -75,7 +75,7 @@ const Table = () => {
     const [data, setData] = React.useState<Category[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
     const [totalRecords, setTotalRecords] = React.useState<number>(0);
-    const [searchState, dispatch] = React.useReducer(reducer, INITIAL_STATE);
+    const [filterState, dispatch] = React.useReducer(reducer, INITIAL_STATE);
     // const [searchState, setSearchState] = React.useState<SearchState>(initialState);
 
     React.useEffect(() => {
@@ -87,10 +87,10 @@ const Table = () => {
             subscribed.current = false;
         };
     }, [
-        searchState.search,
-        searchState.pagination.page,
-        searchState.pagination.per_page,
-        searchState.order,
+        filterState.search,
+        filterState.pagination.page,
+        filterState.pagination.per_page,
+        filterState.order,
     ]);
 
     async function getData() {
@@ -99,11 +99,11 @@ const Table = () => {
         try {
             const { data } = await categoryHttp.list<ListResponse<Category>>({
                 queryParams: {
-                    search: searchState.search,
-                    page: searchState.pagination.page,
-                    per_page: searchState.pagination.per_page,
-                    sort: searchState.order.sort,
-                    dir: searchState.order.dir,
+                    search: filterState.search,
+                    page: filterState.pagination.page,
+                    per_page: filterState.pagination.per_page,
+                    sort: filterState.order.sort,
+                    dir: filterState.order.dir,
                 }
             });
             if (subscribed.current) {
@@ -149,9 +149,9 @@ const Table = () => {
                 debouncedSearchTime={500}
                 options={{
                     serverSide: true,
-                    searchText: searchState.search,
-                    page: searchState.pagination.page - 1,
-                    rowsPerPage: searchState.pagination.per_page,
+                    searchText: filterState.search,
+                    page: filterState.pagination.page - 1,
+                    rowsPerPage: filterState.pagination.per_page,
                     count: totalRecords,
                     customToolbar,
                     onSearchChange: (search: any) => dispatch(Creators.setSearch({ search })),
