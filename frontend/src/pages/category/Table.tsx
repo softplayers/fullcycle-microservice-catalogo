@@ -9,9 +9,10 @@ import { Link } from 'react-router-dom';
 import { BadgeNo, BadgeYes } from '../../components/Badge';
 import CustomTable, { makeActionStyles, TableColumn } from '../../components/Table';
 import { FilterResetButton } from '../../components/Table/FilterResetButton';
-import reducer, { Creators, INITIAL_STATE } from '../../store/filter';
+import { Creators } from '../../store/filter';
 import categoryHttp from '../../util/http/category-http';
 import { Category, ListResponse } from '../../util/models';
+import useFilter from '../../hooks/useFilter';
 
 const columnsDefinition: TableColumn[] = [
     {
@@ -74,8 +75,12 @@ const Table = () => {
     const subscribed = React.useRef(true);
     const [data, setData] = React.useState<Category[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
-    const [totalRecords, setTotalRecords] = React.useState<number>(0);
-    const [filterState, dispatch] = React.useReducer(reducer, INITIAL_STATE);
+    const {
+        filterState,
+        dispatch, 
+        totalRecords,
+        setTotalRecords
+    } = useFilter();
     // const [searchState, setSearchState] = React.useState<SearchState>(initialState);
 
     React.useEffect(() => {
