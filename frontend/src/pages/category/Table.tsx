@@ -80,7 +80,7 @@ const Table = () => {
         dispatch, 
         totalRecords,
         setTotalRecords
-    } = useFilter();
+    } = useFilter({} as any);
     // const [searchState, setSearchState] = React.useState<SearchState>(initialState);
 
     React.useEffect(() => {
