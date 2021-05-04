@@ -76,11 +76,19 @@ const Table = () => {
     const [data, setData] = React.useState<Category[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
     const {
+        columns,
+        filterManager,
         filterState,
-        dispatch, 
+        dispatch,
         totalRecords,
-        setTotalRecords
-    } = useFilter({} as any);
+        setTotalRecords,
+        debounceTime
+    } = useFilter({
+        columns: columnsDefinition,
+        rowsPerPage: 10,
+        rowsPerPageOptions: [10, 25, 50],
+        debounceTime: 500
+    } as any);
     // const [searchState, setSearchState] = React.useState<SearchState>(initialState);
 
     React.useEffect(() => {
@@ -148,10 +156,10 @@ const Table = () => {
         <MuiThemeProvider theme={makeActionStyles(columnsDefinition.length - 1)}>
             <CustomTable
                 title="Listagem de categorias"
-                columns={columnsDefinition}
+                columns={columns}
                 data={data}
                 loading={loading}
-                debouncedSearchTime={500}
+                debouncedSearchTime={debounceTime}
                 options={{
                     serverSide: true,
                     searchText: filterState.search,
@@ -159,10 +167,10 @@ const Table = () => {
                     rowsPerPage: filterState.pagination.per_page,
                     count: totalRecords,
                     customToolbar,
-                    onSearchChange: (search: any) => dispatch(Creators.setSearch({ search })),
-                    onChangePage: (page) => dispatch(Creators.setPage({ page: page + 1 })),
-                    onChangeRowsPerPage: (per_page) => dispatch(Creators.setPerPage({ per_page })),
-                    onColumnSortChange: (changedColumn, dir) => dispatch(Creators.setOrder({ sort: changedColumn, dir })),
+                    onSearchChange: filterManager.onSearchChange,
+                    onChangePage: filterManager.onChangePage,
+                    onChangeRowsPerPage: filterManager.onChangeRowsPerPage,
+                    onColumnSortChange: filterManager.onColumnSortChange
                 }}>
             </CustomTable>
         </MuiThemeProvider >

@@ -1,6 +1,6 @@
 import { MUIDataTableColumn } from 'mui-datatables';
 import React, { Dispatch, Reducer } from 'react';
-import reducer, { INITIAL_STATE } from '../store/filter';
+import reducer, { Creators, INITIAL_STATE } from '../store/filter';
 import { Actions as FilterActions, State as FilterState } from '../store/filter/types';
 
 interface FilterManagerOptions {
@@ -23,12 +23,16 @@ export default function useFilter(options: FilterManagerOptions) {
   filterManager.state = filterState;
   filterManager.dispatch = dispatch;
 
+  filterManager.applyOrderInColumns();
+
   return {
+    columns: filterManager.columns,
     filterManager,
     filterState,
-    dispatch, 
+    dispatch,
     totalRecords,
     setTotalRecords,
+    debounceTime: filterManager.debounceTime
   }
 
 }
@@ -49,4 +53,29 @@ export class FilterManager {
     this.debounceTime = options.debounceTime;
   }
 
+  onSearchChange = (search: any) => this.dispatch(Creators.setSearch({ search }));
+
+  onChangePage = (page) => this.dispatch(Creators.setPage({ page: page + 1 }));
+
+  onChangeRowsPerPage = (per_page) => this.dispatch(Creators.setPerPage({ per_page }));
+
+  onColumnSortChange = (sort, dir) => this.dispatch(Creators.setOrder({ sort, dir }));
+
+  applyOrderInColumns = () => {
+    this.columns = this.columns.map(column => {
+
+      if (column.name !== this.state.order.sort) {
+        return column;
+      }
+
+      return {
+        ...column,
+        options: {
+          ...column.options,
+          sortDirection: this.state.order.dir as any
+        }
+      }
+
+    })
+  }
 }
