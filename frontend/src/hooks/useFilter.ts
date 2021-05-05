@@ -2,23 +2,33 @@ import { MUIDataTableColumn } from 'mui-datatables';
 import React, { Dispatch, Reducer } from 'react';
 import reducer, { Creators, INITIAL_STATE } from '../store/filter';
 import { Actions as FilterActions, State as FilterState } from '../store/filter/types';
+import {useDebounce} from 'use-debounce';
+import {useHistory} from 'react-router';
+import {History} from 'history';
 
 interface FilterManagerOptions {
   columns: MUIDataTableColumn[];
   rowsPerPage: number;
   rowsPerPageOptions: number[];
   debounceTime: number;
+  history: History;
 }
 
-export default function useFilter(options: FilterManagerOptions) {
+interface UseFilterOptions extends Omit<FilterManagerOptions, 'history'> {
+
+}
+
+export default function useFilter(options: UseFilterOptions) {
   console.log('[hook::useFilter]')
 
-  const filterManager = new FilterManager(options);
+  const history = useHistory();
+  const filterManager = new FilterManager({...options, history});
 
   // TODO: pegar state da url
 
   const [totalRecords, setTotalRecords] = React.useState<number>(0);
   const [filterState, dispatch] = React.useReducer<Reducer<FilterState, FilterActions>>(reducer, INITIAL_STATE);
+  const [debouncedFilterState] = useDebounce(filterState, options.debounceTime);
 
   filterManager.state = filterState;
   filterManager.dispatch = dispatch;
@@ -29,10 +39,10 @@ export default function useFilter(options: FilterManagerOptions) {
     columns: filterManager.columns,
     filterManager,
     filterState,
+    debouncedFilterState,
     dispatch,
     totalRecords,
     setTotalRecords,
-    debounceTime: filterManager.debounceTime
   }
 
 }
@@ -44,13 +54,14 @@ export class FilterManager {
   columns: MUIDataTableColumn[];
   rowsPerPage: number;
   rowsPerPageOptions: number[];
-  debounceTime: number;
+  history: History;
 
   constructor(options: FilterManagerOptions) {
-    this.columns = options.columns;
-    this.rowsPerPage = options.rowsPerPage;
-    this.rowsPerPageOptions = options.rowsPerPageOptions;
-    this.debounceTime = options.debounceTime;
+    const {columns, rowsPerPage, rowsPerPageOptions, history} = options;
+    this.columns = columns;
+    this.rowsPerPage = rowsPerPage;
+    this.rowsPerPageOptions = rowsPerPageOptions;
+    this.history = history;
   }
 
   onSearchChange = (search: any) => this.dispatch(Creators.setSearch({ search }));
@@ -77,5 +88,14 @@ export class FilterManager {
       }
 
     })
+  }
+
+  pushHistory() {
+    const newLocation = {
+      pathname: '',
+      search: '',
+      state: '',
+    }
+    this.history.push(newLocation);
   }
 }

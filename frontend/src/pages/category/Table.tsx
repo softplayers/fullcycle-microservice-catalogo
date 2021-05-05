@@ -69,6 +69,8 @@ const columnsDefinition: TableColumn[] = [
     },
 ]
 
+const debounceTime = 300;
+const debounceSearchTime = 300;
 
 const Table = () => {
     const snackbar = useSnackbar();
@@ -79,16 +81,16 @@ const Table = () => {
         columns,
         filterManager,
         filterState,
+        debouncedFilterState,
         dispatch,
         totalRecords,
         setTotalRecords,
-        debounceTime
     } = useFilter({
         columns: columnsDefinition,
         rowsPerPage: 10,
         rowsPerPageOptions: [10, 25, 50],
-        debounceTime: 500
-    } as any);
+        debounceTime: debounceTime
+    });
     // const [searchState, setSearchState] = React.useState<SearchState>(initialState);
 
     React.useEffect(() => {
@@ -100,10 +102,10 @@ const Table = () => {
             subscribed.current = false;
         };
     }, [
-        filterState.search,
-        filterState.pagination.page,
-        filterState.pagination.per_page,
-        filterState.order,
+        debouncedFilterState.search,
+        debouncedFilterState.pagination.page,
+        debouncedFilterState.pagination.per_page,
+        debouncedFilterState.order,
     ]);
 
     async function getData() {
@@ -159,7 +161,7 @@ const Table = () => {
                 columns={columns}
                 data={data}
                 loading={loading}
-                debouncedSearchTime={debounceTime}
+                debouncedSearchTime={debounceSearchTime}
                 options={{
                     serverSide: true,
                     searchText: filterState.search,
