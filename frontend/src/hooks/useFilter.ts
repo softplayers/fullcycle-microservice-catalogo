@@ -2,9 +2,9 @@ import { MUIDataTableColumn } from 'mui-datatables';
 import React, { Dispatch, Reducer } from 'react';
 import reducer, { Creators, INITIAL_STATE } from '../store/filter';
 import { Actions as FilterActions, State as FilterState } from '../store/filter/types';
-import {useDebounce} from 'use-debounce';
-import {useHistory} from 'react-router';
-import {History} from 'history';
+import { useDebounce } from 'use-debounce';
+import { useHistory } from 'react-router';
+import { History } from 'history';
 
 interface FilterManagerOptions {
   columns: MUIDataTableColumn[];
@@ -22,7 +22,7 @@ export default function useFilter(options: UseFilterOptions) {
   console.log('[hook::useFilter]')
 
   const history = useHistory();
-  const filterManager = new FilterManager({...options, history});
+  const filterManager = new FilterManager({ ...options, history });
 
   // TODO: pegar state da url
 
@@ -57,7 +57,7 @@ export class FilterManager {
   history: History;
 
   constructor(options: FilterManagerOptions) {
-    const {columns, rowsPerPage, rowsPerPageOptions, history} = options;
+    const { columns, rowsPerPage, rowsPerPageOptions, history } = options;
     this.columns = columns;
     this.rowsPerPage = rowsPerPage;
     this.rowsPerPageOptions = rowsPerPageOptions;
@@ -92,10 +92,24 @@ export class FilterManager {
 
   pushHistory() {
     const newLocation = {
-      pathname: '',
-      search: '',
-      state: '',
+      pathname: this.history.location.pathname,
+      search: '?' + new URLSearchParams(this.formartSearchParams() as any),
+      state: { ...this.state },
     }
+
     this.history.push(newLocation);
+  }
+
+  formartSearchParams() {
+    const { search, pagination, order } = this.state;
+    const { page, per_page } = pagination;
+    const { sort, dir } = order;
+
+    return {
+      ...(search && { search }),
+      ...(page !== 1 && { page }),
+      ...(per_page !== 15 && { per_page }),
+      ...(sort && { sort, dir }),
+    }
   }
 }

@@ -95,7 +95,7 @@ const Table = () => {
 
     React.useEffect(() => {
         subscribed.current = true;
-
+        filterManager.pushHistory();
         getData();
 
         return () => {
@@ -124,15 +124,6 @@ const Table = () => {
             if (subscribed.current) {
                 setData(data.data);
                 setTotalRecords(data.meta.total);
-                /*
-                setSearchState(prevState => ({
-                    ...prevState,
-                    pagination: {
-                        ...prevState.pagination,
-                        total: data.meta.total
-                    }
-                }))
-                */
             }
         }
         catch (error) {
