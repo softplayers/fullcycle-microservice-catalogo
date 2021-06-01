@@ -160,6 +160,7 @@ const Table = () => {
                     searchText: filterState.search,
                     page: filterState.pagination.page - 1,
                     rowsPerPage: filterState.pagination.per_page,
+                    rowsPerPageOptions: rowsPerPageOptions,
                     count: totalRecords,
                     customToolbar,
                     onSearchChange: filterManager.onSearchChange,

@@ -39,6 +39,10 @@ export default function useFilter(options: UseFilterOptions) {
 
   filterManager.applyOrderInColumns();
 
+  React.useEffect(() => {
+    filterManager.replaceHistory();
+  }, []);
+
   return {
     columns: filterManager.columns,
     filterManager,
@@ -62,7 +66,6 @@ export class FilterManager {
   history: History;
 
   constructor(options: FilterManagerOptions) {
-    debugger;
     const { columns, rowsPerPage, rowsPerPageOptions, history } = options;
     this.columns = columns;
     this.rowsPerPage = rowsPerPage;
@@ -95,6 +98,15 @@ export class FilterManager {
       }
 
     })
+  }
+
+  replaceHistory() {
+    console.log('replace history');
+    this.history.replace({
+      pathname: this.history.location.pathname,
+      search: '?' + new URLSearchParams(this.formartSearchParams() as any),
+      state: this.state,
+    });
   }
 
   pushHistory() {
