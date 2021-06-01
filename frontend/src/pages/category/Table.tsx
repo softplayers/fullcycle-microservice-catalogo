@@ -71,6 +71,8 @@ const columnsDefinition: TableColumn[] = [
 
 const debounceTime = 300;
 const debounceSearchTime = 300;
+const rowsPerPage = 15;
+const rowsPerPageOptions = [15, 25, 50];
 
 const Table = () => {
     const snackbar = useSnackbar();
@@ -87,8 +89,8 @@ const Table = () => {
         setTotalRecords,
     } = useFilter({
         columns: columnsDefinition,
-        rowsPerPage: 10,
-        rowsPerPageOptions: [10, 25, 50],
+        rowsPerPage: rowsPerPage,
+        rowsPerPageOptions: rowsPerPageOptions,
         debounceTime: debounceTime
     });
     // const [searchState, setSearchState] = React.useState<SearchState>(initialState);
