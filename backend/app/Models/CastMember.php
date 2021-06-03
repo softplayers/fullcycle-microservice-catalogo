@@ -4,13 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use EloquentFilter\Filterable;
+use \App\ModelFilters\CastMemberFilter;
+use \App\Models\Traits\Uuid;
 
 class CastMember extends Model
 {
+    use SoftDeletes, Uuid, Filterable;
+
     const TYPE_DIRECTOR = 1;
     const TYPE_ACTOR = 2;
 
-    use SoftDeletes, \App\Models\Traits\Uuid;
+    public static $types = [
+      CastMember::TYPE_DIRECTOR,
+      CastMember::TYPE_ACTOR,
+    ];
+
     protected $fillable = ['name', 'type'];
     protected $dates = ['deleted_at'];
     protected $casts = [
@@ -19,4 +28,9 @@ class CastMember extends Model
     ];
 
     public $incrementing = false;
+
+    public function modelFilter()
+    {
+      return $this->provideFilter(CastMemberFilter::class);
+    }
 }

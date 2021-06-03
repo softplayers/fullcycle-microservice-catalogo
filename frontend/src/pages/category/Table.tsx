@@ -79,6 +79,8 @@ const Table = () => {
     const subscribed = React.useRef(true);
     const [data, setData] = React.useState<Category[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
+    const tableRef = null;
+
     const {
         columns,
         filterManager,
