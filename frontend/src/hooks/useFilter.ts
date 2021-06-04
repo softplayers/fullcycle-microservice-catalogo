@@ -15,6 +15,14 @@ interface FilterManagerOptions {
   rowsPerPageOptions: number[];
   debounceTime: number;
   history: History;
+  // tableRef: 
+  extraFilter?: ExtraFilter;
+}
+
+interface ExtraFilter {
+  getStateFromURL: (queryParams: URLSearchParams) => any,
+  formatSearchParams: (debouncedState: FilterState) => any,
+  createValidationSchema: () => any,
 }
 
 interface UseFilterOptions extends Omit<FilterManagerOptions, 'history'> {
@@ -59,18 +67,23 @@ export class FilterManager {
 
   schema;
   state: FilterState = null as any;
+  // debouncedState: 
   dispatch: Dispatch<FilterActions> = null as any;
   columns: MUIDataTableColumn[];
   rowsPerPage: number;
   rowsPerPageOptions: number[];
   history: History;
+  // tableRef:
+  extraFilter?: ExtraFilter;
 
   constructor(options: FilterManagerOptions) {
-    const { columns, rowsPerPage, rowsPerPageOptions, history } = options;
+    const { columns, rowsPerPage, rowsPerPageOptions, history /*, tableRef*/, extraFilter } = options;
     this.columns = columns;
     this.rowsPerPage = rowsPerPage;
     this.rowsPerPageOptions = rowsPerPageOptions;
     this.history = history;
+    // this.tableRed 
+    this.extraFilter = extraFilter;
     this.createValidationSchema();
   }
 
@@ -129,7 +142,7 @@ export class FilterManager {
   }
 
   formartSearchParams() {
-    const { search, pagination, order } = this.state;
+    const { search, pagination, order, extraFilter } = this.state;
     const { page, per_page } = pagination;
     const { sort, dir } = order;
 
@@ -138,6 +151,7 @@ export class FilterManager {
       ...(page !== 1 && { page }),
       ...(per_page !== 15 && { per_page }),
       ...(sort && { sort, dir }),
+      ...(extraFilter && extraFilter.formatSearchParams(this.state)),
     }
   }
 
@@ -153,6 +167,11 @@ export class FilterManager {
         sort: queryParams.get('sort'),
         dir: queryParams.get('dir'),
       },
+      ...(this.extraFilter && 
+        {
+          extraFilter: this.extraFilter.getStateFromURL(queryParams)
+        }
+      )
     })
   }
 
@@ -194,6 +213,12 @@ export class FilterManager {
           .transform(value => !value || !['asc', 'desc'].includes(value.toLowerCase()) ? undefined : value)
           .default(null),
       }),
+
+      ...(this.extraFilter && 
+        {
+          extraFilter: this.extraFilter.createValidationSchema()
+        }
+      )
     })
   }
 }
