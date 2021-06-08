@@ -14,6 +14,7 @@ import categoryHttp from '../../util/http/category-http';
 import { Category, ListResponse } from '../../util/models';
 import useFilter from '../../hooks/useFilter';
 
+
 const columnsDefinition: TableColumn[] = [
     {
         name: "id",
@@ -93,7 +94,18 @@ const Table = () => {
         columns: columnsDefinition,
         rowsPerPage: rowsPerPage,
         rowsPerPageOptions: rowsPerPageOptions,
-        debounceTime: debounceTime
+        debounceTime: debounceTime,
+        /* extraFilter: {
+            createValidationSchema: () => {
+                
+            },
+            formatSearchParams: (debouncedState) => {
+
+            },
+            getStateFromURL: (queryParams) => {
+
+            }
+        } */
     });
     // const [searchState, setSearchState] = React.useState<SearchState>(initialState);
 

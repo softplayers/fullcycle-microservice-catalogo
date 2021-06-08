@@ -141,7 +141,7 @@ export class FilterManager {
     this.history.push(newLocation);
   }
 
-  formartSearchParams() {
+  formartSearchParams = () => {
     const { search, pagination, order, extraFilter } = this.state;
     const { page, per_page } = pagination;
     const { sort, dir } = order;
