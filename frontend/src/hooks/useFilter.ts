@@ -43,6 +43,7 @@ export default function useFilter(options: UseFilterOptions) {
   const [debouncedFilterState] = useDebounce(filterState, options.debounceTime);
 
   filterManager.state = filterState;
+  filterManager.debouncedState = debouncedFilterState;
   filterManager.dispatch = dispatch;
 
   filterManager.applyOrderInColumns();
@@ -67,7 +68,7 @@ export class FilterManager {
 
   schema;
   state: FilterState = null as any;
-  // debouncedState: 
+  debouncedState: FilterState = null as any;
   dispatch: Dispatch<FilterActions> = null as any;
   columns: MUIDataTableColumn[];
   rowsPerPage: number;
@@ -118,7 +119,7 @@ export class FilterManager {
     this.history.replace({
       pathname: this.history.location.pathname,
       search: '?' + new URLSearchParams(this.formartSearchParams() as any),
-      state: this.state,
+      state: this.debouncedState,
     });
   }
 
@@ -127,7 +128,7 @@ export class FilterManager {
     const newLocation = {
       pathname: this.history.location.pathname,
       search: '?' + new URLSearchParams(this.formartSearchParams() as any),
-      state: { ...this.state },
+      state: { ...this.debouncedState },
     }
 
     const oldState = this.history.location.state;
@@ -141,8 +142,8 @@ export class FilterManager {
     this.history.push(newLocation);
   }
 
-  formartSearchParams = () => {
-    const { search, pagination, order, extraFilter } = this.state;
+  private formartSearchParams() {
+    const { search, pagination, order } = this.debouncedState;
     const { page, per_page } = pagination;
     const { sort, dir } = order;
 
@@ -151,7 +152,7 @@ export class FilterManager {
       ...(page !== 1 && { page }),
       ...(per_page !== 15 && { per_page }),
       ...(sort && { sort, dir }),
-      ...(extraFilter && extraFilter.formatSearchParams(this.state)),
+      ...(this.extraFilter && this.extraFilter?.formatSearchParams(this.debouncedState)),
     }
   }
 
