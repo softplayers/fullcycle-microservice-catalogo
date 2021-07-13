@@ -1,18 +1,10 @@
-// @flow 
 import * as React from 'react';
-import { useParams } from 'react-router';
-import { Page } from '../../components/Page';
-import { Form } from './Form';
+import {Form} from "./Form";
+import {Page} from "../../components/Page";
 
-type Props = {
-    
-};
-
-const PageForm = (props: Props) => {
-    const {id} = useParams<any>();
-
+const PageForm = () => {
     return (
-        <Page title={id ? 'Editar gênero' : 'Criar gênero'}>
+        <Page title={'Criar gênero'}>
             <Form/>
         </Page>
     );

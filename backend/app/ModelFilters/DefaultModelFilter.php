@@ -1,14 +1,16 @@
-<?php 
+<?php
 
 namespace App\ModelFilters;
 
 use EloquentFilter\ModelFilter;
+use Illuminate\Support\Str;
 
 abstract class DefaultModelFilter extends ModelFilter
 {
+
     protected $sortable = [];
 
-    public function setup() 
+    public function setup()
     {
         $this->blacklistMethod('isSortable');
 
@@ -18,12 +20,10 @@ abstract class DefaultModelFilter extends ModelFilter
         }
     }
 
-
-    public function sort($column) 
+    public function sort($column)
     {
-        if (method_exists($this, $method = 'sortBy' . \Str::studly($column))){
-            $this.$method();
-            return;
+        if(method_exists($this, $method = 'sortBy' . Str::studly($column))){
+            $this->$method();
         }
 
         if ($this->isSortable($column)) {
@@ -32,8 +32,12 @@ abstract class DefaultModelFilter extends ModelFilter
         }
     }
 
-    protected function isSortable($column) 
+    protected function isSortable($column)
     {
-       return in_array($column, $this->sortable);
+        return in_array($column, $this->sortable);
     }
+
 }
+
+
+//endereco?sort=created_at&dir=xpto

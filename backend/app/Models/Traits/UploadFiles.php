@@ -11,45 +11,51 @@ use Illuminate\Support\Arr;
 trait UploadFiles
 {
     public $oldFiles = [];
+
     protected abstract function uploadDir();
 
-    public static function bootUploadFiles(){
-        static::updating(function (Model $model){
+    public static function bootUploadFiles()
+    {
+        static::updating(function (Model $model) {
             $fieldsUpdated = array_keys($model->getDirty());
             $filesUpdated = array_intersect($fieldsUpdated, self::$fileFields);
-            $filesFiltered = Arr::where($filesUpdated, function ($fileField) use($model){
-               return $model->getOriginal($fileField);
+            $filesFiltered = Arr::where($filesUpdated, function ($fileField) use ($model) {
+                return $model->getOriginal($fileField);
             });
-
-            $model->oldFiles = array_map(function($fileField) use ($model){
+            $model->oldFiles = array_map(function ($fileField) use ($model) {
                 return $model->getOriginal($fileField);
             }, $filesFiltered);
         });
     }
 
-    public function relativeFilePath($value){
+    public function relativeFilePath($value)
+    {
         return "{$this->uploadDir()}/{$value}";
     }
 
     /**
      * @param UploadedFile[] $files
      */
-    public function uploadFiles(array $files){
-        foreach ($files as $file){
+    public function uploadFiles(array $files)
+    {
+        foreach ($files as $file) {
             $this->uploadFile($file);
         }
     }
 
-    public function uploadFile(UploadedFile $file){
+    public function uploadFile(UploadedFile $file)
+    {
         $file->store($this->uploadDir());
     }
 
-    public function deleteOldFiles(){
+    public function deleteOldFiles()
+    {
         $this->deleteFiles($this->oldFiles);
     }
 
-    public function deleteFiles(array $files){
-        foreach ($files as $file){
+    public function deleteFiles(array $files)
+    {
+        foreach ($files as $file) {
             $this->deleteFile($file);
         }
     }
@@ -57,15 +63,17 @@ trait UploadFiles
     /**
      * @param string|UploadedFile $file
      */
-    public function deleteFile($file){
+    public function deleteFile($file)
+    {
         $filename = $file instanceof UploadedFile ? $file->hashName() : $file;
-        \Storage::delete("{$this->uploadDir()}/$filename");
+        \Storage::delete("{$this->uploadDir()}/{$filename}");
     }
 
-    public static function extractFiles(array &$attributes = []){
+    public static function extractFiles(array &$attributes = [])
+    {
         $files = [];
-        foreach (self::$fileFields as $file){
-            if (isset($attributes[$file]) && $attributes[$file] instanceof UploadedFile){
+        foreach (self::$fileFields as $file) {
+            if (isset($attributes[$file]) && $attributes[$file] instanceof UploadedFile) {
                 $files[] = $attributes[$file];
                 $attributes[$file] = $attributes[$file]->hashName();
             }
@@ -73,7 +81,8 @@ trait UploadFiles
         return $files;
     }
 
-    protected function getFileUrl($filename){
+    protected function getFileUrl($filename)
+    {
         return \Storage::url($this->relativeFilePath($filename));
     }
 }

@@ -3,13 +3,17 @@
 namespace Tests\Unit\Models;
 
 use App\Models\CastMember;
-use App\Models\Genre;
+use App\Models\Traits\SerializeDateToIso8601;
 use App\Models\Traits\Uuid;
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+
+# Classe especifica               - vendor/bin/phpunit tests/Unit/CastMemberTest.php
+# Método especifico em um arquivo - vendor/bin/phpunit --filter testIfUseTraits tests/Unit/CastMemberTest.php
+# Método especifico em uma classe - vendor/bin/phpunit --filter CastMemberTest::testIfUseTraits
 
 class CastMemberUnitTest extends TestCase
 {
@@ -17,46 +21,48 @@ class CastMemberUnitTest extends TestCase
 
     protected function setUp(): void
     {
-      parent::setUp();
-      $this->castMember = new CastMember();
+        parent::setUp();
+        $this->castMember = new CastMember();
     }
 
-    protected function tearDown(): void
-    {
-      parent::tearDown();
-    }
 
     public function testIfUseTraits()
     {
-      $expected = [SoftDeletes::class, Uuid::class];
-      $actual = array_keys(class_uses(CastMember::class));
-      $this->assertEqualsCanonicalizing($expected, $actual);
+        $traits = [
+            SoftDeletes::class,
+            Uuid::class,
+            Filterable::class,
+            SerializeDateToIso8601::class
+        ];
+        $castMemberTraits = array_keys(class_uses(CastMember::class));
+        $this->assertEquals($traits, $castMemberTraits);
     }
 
-    public function testFillable()
+    public function testFillableAttribute()
     {
-      $fillable = ['name', 'type'];
-      $this->assertEqualsCanonicalizing($fillable, $this->castMember->getFillable());
+        $fillable = ['name', 'type'];
+        $this->assertEquals($fillable, $this->castMember->getFillable());
     }
 
-    public function testCasts()
+    public function testDatesAttribute()
     {
-      $expected = ['id' => 'string', 'type' => 'integer'];
-      $this->assertEqualsCanonicalizing($expected, $this->castMember->getCasts());
+        $dates = ['deleted_at', 'created_at', 'updated_at'];
+        foreach ($dates as $date) {
+            $this->assertContains($date, $this->castMember->getDates());
+        }
+        $this->assertCount(count($dates), $this->castMember->getDates());
     }
 
-    public function testIncrementing()
+    public function testCatsAttribute()
     {
-      $this->assertFalse($this->castMember->incrementing);
+        $casts = ['id' => 'string', 'type' => 'integer'];
+        $this->assertEquals($casts, $this->castMember->getCasts());
     }
 
-    public function testDatesAttributes()
+    public function testIncrementingAttribute()
     {
-      $expected = ['deleted_at', 'created_at', 'updated_at'];
-      foreach ($expected as $date) {
-        $this->assertContains($date, $this->castMember->getDates());
-      }
-      $this->assertCount(count($expected), $this->castMember->getDates());
+        $this->assertFalse($this->castMember->incrementing);
     }
+
 
 }

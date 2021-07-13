@@ -1,69 +1,84 @@
-/* eslint-disable no-nested-ternary */
-import { Box, Container } from '@material-ui/core';
-import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
-import Link, { LinkProps } from '@material-ui/core/Link';
+import React from "react";
+import Link, {LinkProps} from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
-import { Location } from 'history';
-import React from 'react';
-import { Route } from 'react-router';
-import { Link as RouterLink } from 'react-router-dom';
-import RouterParser from 'route-parser';
-import routes from '../routes';
+import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
+import {Route} from 'react-router';
+import {Link as RouterLink} from 'react-router-dom';
+import {Box, Container, createStyles, makeStyles, Theme} from "@material-ui/core";
+import {Location} from 'history'
+import routes from "../routes";
+import RouteParser from 'route-parser';
+import { useHasRealmRole } from "../hooks/useHasRole";
 
 const breadcrumbNameMap: { [key: string]: string } = {};
 routes.forEach(route => breadcrumbNameMap[route.path as string] = route.label);
 
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        linkRouter: {
+            color: theme.palette.secondary.main,
+            "&:focus, &:active": {
+                color: theme.palette.secondary.main
+            },
+            "&:hover": {
+                color: theme.palette.secondary.dark
+            }
+        }
+    }),
+);
+
 interface LinkRouterProps extends LinkProps {
-  to: string;
-  replace?: boolean;
+    to: string;
+    replace?: boolean;
 }
 
-const LinkRouter = (props: LinkRouterProps) => <Link {...props} component={RouterLink as any} />;
+const LinkRouter = (props: LinkRouterProps) => <Link {...props} component={RouterLink as any}/>;
 
 export default function Breadcrumbs() {
+    const classes = useStyles();
+    const hasCatalogAdmin = useHasRealmRole('catalog-admin');
 
-  function makeBreadcrumbs(location: Location) {
-    const pathnames = location.pathname.split('/').filter(x => x);
-    pathnames.unshift('/');
-    console.log('[Breadcrumb]', pathnames, location.pathname)
+    function makeBreadcrumb(location: Location) {
+        const pathnames = location.pathname.split('/').filter(x => x);
+        pathnames.unshift('/'); // [ / , categories, create]
+        return (
+            <MuiBreadcrumbs aria-label="breadcrumb">
+                {
+                    pathnames.map((value, index) => { // /, categories, create //categories/create
+                        const last = index === pathnames.length - 1;
+                        const to = `${pathnames.slice(0, index + 1).join('/').replace('//', '/')}`; // /categories | /categories/create/xpto
+                        const route = Object
+                            .keys(breadcrumbNameMap)
+                            .find(
+                                path => new RouteParser(path).match(to)
+                            );
+
+                        if (route === undefined) {
+                            return false;
+                        }
+
+                        return last ? (
+                            <Typography color="textPrimary" key={to}>
+                                {breadcrumbNameMap[route]}
+                            </Typography>
+                        ) : (
+                            <LinkRouter color="inherit" to={to} key={to} className={classes.linkRouter}>
+                                {breadcrumbNameMap[route]}
+                            </LinkRouter>
+                        );
+                    })
+                }
+            </MuiBreadcrumbs>
+        );
+    }
 
     return (
-      <MuiBreadcrumbs aria-label="breadcrumb">
-        {
-          pathnames.map((value, index) => {
-            const last = index === pathnames.length - 1;
-            const to = `${pathnames.slice(0, index + 1).join('/').replace('//', '/')}`;
-            const route = Object.keys(breadcrumbNameMap).find(path => new RouterParser(path).match(to));
-
-            if (route === undefined) {
-              return false;
-            }
-
-            return last ? (
-              <Typography color="textPrimary" key={to}>
-                {breadcrumbNameMap[to]}
-              </Typography>
-            ) : (
-              <LinkRouter color="inherit" to={to} key={to}>
-                {breadcrumbNameMap[to]}
-              </LinkRouter>
-            );
-          })
-        }
-      </MuiBreadcrumbs>
+        hasCatalogAdmin ? <Container>
+            <Box paddingTop={2} paddingBottom={1}>
+                <Route>
+                    {({location}: { location: Location }) => makeBreadcrumb(location)}
+                </Route>
+            </Box>
+        </Container> : null
     );
-  }
-
-  return (
-    <Container>
-      <Box paddingTop={2} paddingBottom={1}>
-        <Route>
-          {
-            ({ location }: { location: Location }) => makeBreadcrumbs(location)
-          }
-        </Route>
-      </Box>
-    </Container>
-  );
-
 }

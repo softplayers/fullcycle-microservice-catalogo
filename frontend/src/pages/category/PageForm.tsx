@@ -1,20 +1,15 @@
-// @flow 
 import * as React from 'react';
-import { useParams } from 'react-router';
-import { Page } from '../../components/Page';
-import { Form } from './Form';
+import {Form} from "./Form";
+import {Page} from "../../components/Page";
+import {useParams} from 'react-router';
 
-type Props = {
-    
-};
-
-const List = (props: Props) => {
-    const {id} = useParams<any>();
+const PageForm = () => {
+    const {id} = useParams();
     return (
-        <Page title={id ? 'Editar categoria' : 'Criar categoria'}>
+        <Page title={!id ? 'Criar categoria' : 'Editar categoria'}>
             <Form/>
         </Page>
     );
 };
 
-export default List;
+export default PageForm;

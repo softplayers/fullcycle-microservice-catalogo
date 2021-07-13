@@ -3,12 +3,17 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Genre;
+use App\Models\Traits\SerializeDateToIso8601;
 use App\Models\Traits\Uuid;
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+
+# Classe especifica               - vendor/bin/phpunit tests/Unit/GenreTest.php
+# Método especifico em um arquivo - vendor/bin/phpunit --filter testIfUseTraits tests/Unit/GenreTest.php
+# Método especifico em uma classe - vendor/bin/phpunit --filter GenreTest::testIfUseTraits
 
 class GenreUnitTest extends TestCase
 {
@@ -16,48 +21,48 @@ class GenreUnitTest extends TestCase
 
     protected function setUp(): void
     {
-      parent::setUp();
-      $this->genre = new Genre();
+        parent::setUp();
+        $this->genre = new Genre();
     }
 
-    protected function tearDown(): void
-    {
-      parent::tearDown();
-    }
 
     public function testIfUseTraits()
     {
-      $expected = [SoftDeletes::class, Uuid::class];
-      $actual = array_keys(class_uses(Genre::class));
-      $this->assertEqualsCanonicalizing($expected, $actual);
+        $traits = [
+            SoftDeletes::class,
+            Uuid::class,
+            Filterable::class,
+            SerializeDateToIso8601::class
+        ];
+        $genreTraits = array_keys(class_uses(Genre::class));
+        $this->assertEquals($traits, $genreTraits);
     }
 
-    public function testFillable()
+    public function testFillableAttribute()
     {
-      $fillable = ['name', 'is_active'];
-      $this->assertEqualsCanonicalizing($fillable, $this->genre->getFillable());
+        $fillable = ['name', 'is_active'];
+        $this->assertEquals($fillable, $this->genre->getFillable());
     }
 
-    public function testCasts()
+    public function testDatesAttribute()
     {
-      $expected = ['id' => 'string', 'is_active' => 'bool'];
-      $this->assertEqualsCanonicalizing($expected, $this->genre->getCasts());
+        $dates = ['deleted_at', 'created_at', 'updated_at'];
+        foreach ($dates as $date) {
+            $this->assertContains($date, $this->genre->getDates());
+        }
+        $this->assertCount(count($dates), $this->genre->getDates());
     }
 
-    public function testIncrementing()
+    public function testCatsAttribute()
     {
-      $this->assertFalse($this->genre->incrementing);
+        $casts = ['id' => 'string', 'is_active' => 'boolean'];
+        $this->assertEquals($casts, $this->genre->getCasts());
     }
 
-    public function testDatesAttributes()
+    public function testIncrementingAttribute()
     {
-      $expected = ['deleted_at', 'created_at', 'updated_at'];
-      foreach ($expected as $date) {
-        $this->assertContains($date, $this->genre->getDates());
-      }
-      $this->assertCount(count($expected), $this->genre->getDates());
+        $this->assertFalse($this->genre->incrementing);
     }
-
 
 
 }

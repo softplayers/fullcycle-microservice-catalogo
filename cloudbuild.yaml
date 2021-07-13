@@ -1,63 +1,71 @@
 steps:
 
-#- id: 'Gerando service-account-storage.json'
-#  name: 'gcr.io/cloud-builders/gcloud'
-#  args:
-#    - kms
-#    - decrypt
-#    - --ciphertext-file=./storage/credentials/google/service-account-storage.json.enc
-#    - --plaintext-file=./storage/credentials/google/service-account-storage.json
-#    - --location=global
-#    - --keyring=testing-lesson
-#    - --key=service-account
+    -   id: 'Gerando service-account-storage.json'
+        name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+        entrypoint: gcloud
+        args:
+            - kms
+            - decrypt
+            - --ciphertext-file=./backend/storage/credentials/google/service-account-storage.json.enc
+            - --plaintext-file=./backend/storage/credentials/google/service-account-storage.json
+            - --location=global
+            - --keyring=testing
+            - --key=service-account
 
-- id: 'Rodando docker-compose'
-  name: 'gcr.io/$PROJECT_ID/docker-compose'
-  args: ['-f', 'docker-compose.prod.yaml', 'up', '-d']
-#  env:
-#    - GOOGLE_CLOUD_PROJECT_ID=$PROJECT_ID
-#    - GOOGLE_CLOUD_KEY_FILE=service-account-storage.json
-#    - GOOGLE_CLOUD_STORAGE_BUCKET=code-micro-videos-dsahara
-#    - GOOGLE_CLOUD_STORAGE_API_URI=https://storage.cloud.google.com/code-micro-videos-rav
-#    - TESTING_PROD=TRUE
+    -   id: "Rodando docker-compose"
+        name: 'gcr.io/$PROJECT_ID/docker-compose:1.24.0'
+        args: ['-f','docker-compose.prod.yaml','up','-d']
+        env:
+            - GOOGLE_CLOUD_PROJECT_ID=$PROJECT_ID
+            - GOOGLE_CLOUD_KEY_FILE=service-account-storage.json
+            - GOOGLE_CLOUD_STORAGE_BUCKET=code-micro-videos1
+            - GOOGLE_CLOUD_STORAGE_API_URI=https://storage.cloud.google.com/code-micro-videos1
+            - TESTING_PROD=true
 
+    -   id: "Chown in /var/www"
+        name: 'gcr.io/cloud-builders/docker'
+        args: ['exec','-u','root','-t','app','chown','-R','www-data:www-data','/var/www']
 
-- id: 'Chown in /var/www'
-  name: 'gcr.io/cloud-builders/docker'
-  args: ['exec','-u','root','-t','app','chown','-R','www-data:www-data','/var/www']
+    -   id: "Rodando composer"
+        name: 'gcr.io/cloud-builders/docker'
+        args: ['exec','-t','app','composer','install', '-d','/var/www/backend']
 
+    -   id: "Copiando backend .env"
+        name: 'gcr.io/cloud-builders/docker'
+        args: ['exec','-t','app','cp','/var/www/backend/.env.example','/var/www/backend/.env']
 
-- id: 'Rodando docker ps'
-  name: 'gcr.io/cloud-builders/docker'
-  args: ['ps']
+    -   id: "Copiando backend .env.testing"
+        name: 'gcr.io/cloud-builders/docker'
+        args: ['exec','-t','app','cp','/var/www/backend/.env.testing.example','/var/www/backend/.env.testing']
 
+    -   id: "Rodando key:generate"
+        name: 'gcr.io/cloud-builders/docker'
+        args: ['exec','-t','app','php','/var/www/backend/artisan','key:generate']
 
-- id: 'Rodando composer'
-  name: 'gcr.io/cloud-builders/docker'
-  args: ['exec', '-t', 'app', 'composer', 'install']
+    -   id: "Rodando migrations"
+        name: 'gcr.io/cloud-builders/docker'
+        args: ['exec','-t','app','php','/var/www/backend/artisan','migrate']
 
+    -   id: "Rodando Phpunit"
+        name: 'gcr.io/cloud-builders/docker'
+        args: ['exec','-t','app','php','/var/www/backend/vendor/bin/phpunit','-c','/var/www/backend/phpunit.xml']
+    
+    -   id: "Copiando frontend .env"
+        name: 'gcr.io/cloud-builders/docker'
+        args: ['exec','-t','app','cp','/var/www/frontend/.env.example','/var/www/frontend/.env']
 
-- id: 'Copiando .env'
-  name: 'gcr.io/cloud-builders/docker'
-  args: ['exec', '-t', 'app', 'cp', '.env.example', '.env']
+    -   id: 'Install front-end'
+        name: 'gcr.io/cloud-builders/docker'
+        args: ['exec','-t','app','npm','install', '--prefix', '/var/www/frontend']
+    
+    -   id: 'Permission on scripts/build.sh'
+        name: 'gcr.io/cloud-builders/docker'
+        args: ['exec','-t','app','chmod','+x','/var/www/frontend/scripts/build.sh']
 
+    -   id: 'Build front-end'
+        name: 'gcr.io/cloud-builders/docker'
+        args: ['exec','-t','app','npm','run', 'build-laravel','--prefix', '/var/www/frontend']
 
-- id: 'Copiando .env.testing'
-  name: 'gcr.io/cloud-builders/docker'
-  args: ['exec', '-t', 'app', 'cp', '.env.testing.example', '.env.testing']
-  
-
-- id: 'Rodando key:generate'
-  name: 'gcr.io/cloud-builders/docker'
-  args: ['exec', '-t', 'app', 'php', 'artisan', 'key:generate']
-
-
-- id: 'Rodando migrations'
-  name: 'gcr.io/cloud-builders/docker'
-  args: ['exec', '-t', 'app', 'php', 'artisan', 'migrate']
-
-
-- id: 'Rodando Phpunit'
-  name: 'gcr.io/cloud-builders/docker'
-  args: ['exec', '-t', 'app', 'php', 'vendor/bin/phpunit', '-c', 'phpunit.xml']
-
+    -   id: 'Test Laravel and React integration'
+        name: 'gcr.io/cloud-builders/docker'
+        args: ['exec','-w','/var/www/backend','-t','app','php','artisan','dusk', '--env=testing']

@@ -1,33 +1,30 @@
-// @flow 
-import {Box, Fab} from '@material-ui/core';
 import * as React from 'react';
-import { Page } from '../../components/Page';
+import {Page} from "../../components/Page";
+import {Box, Fab} from "@material-ui/core";
+import {Link} from "react-router-dom";
 import AddIcon from '@material-ui/icons/Add';
-import {Link} from 'react-router-dom';
-import Table from './Table';
+import Table from "./Table";
 
-type Props = {
-    
-};
-
-const List = (props: Props) => {
+const PageList = () => {
     return (
-        <Page title='Listagem de Categoria'>
+        <Page title={'Listagem de categorias'}>
             <Box dir={'rtl'} paddingBottom={2}>
-                <Fab 
+                <Fab
                     title="Adicionar categoria"
+                    color={'secondary'}
                     size="small"
-                    color="secondary"
                     component={Link}
-                    to="/categories/create">
-                        <AddIcon/>
+                    to="/categories/create"
+                >
+                    <AddIcon/>
                 </Fab>
             </Box>
             <Box>
-                <Table />
+                <Table/>
             </Box>
         </Page>
     );
 };
 
-export default List;
+
+export default PageList;

@@ -3,9 +3,17 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Category;
+use App\Models\Traits\SerializeDateToIso8601;
 use App\Models\Traits\Uuid;
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+# Classe especifica               - vendor/bin/phpunit tests/Unit/CategoryTest.php
+# Método especifico em um arquivo - vendor/bin/phpunit --filter testIfUseTraits tests/Unit/CategoryTest.php
+# Método especifico em uma classe - vendor/bin/phpunit --filter CategoryTest::testIfUseTraits
 
 class CategoryUnitTest extends TestCase
 {
@@ -13,48 +21,48 @@ class CategoryUnitTest extends TestCase
 
     protected function setUp(): void
     {
-      parent::setUp();
-      $this->category = new Category();
+        parent::setUp();
+        $this->category = new Category();
     }
 
-    protected function tearDown(): void
-    {
-      parent::tearDown();
-    }
 
     public function testIfUseTraits()
     {
-      $expected = [SoftDeletes::class, Uuid::class];
-      $actual = array_keys(class_uses(Category::class));
-      $this->assertEqualsCanonicalizing($expected, $actual);
+        $traits = [
+            SoftDeletes::class,
+            Uuid::class,
+            Filterable::class,
+            SerializeDateToIso8601::class
+        ];
+        $categoryTraits = array_keys(class_uses(Category::class));
+        $this->assertEquals($traits, $categoryTraits);
     }
 
-    public function testFillable()
+    public function testFillableAttribute()
     {
-      $fillable = ['name', 'description', 'is_active'];
-      $this->assertEqualsCanonicalizing($fillable, $this->category->getFillable());
+        $fillable = ['name', 'description', 'is_active'];
+        $this->assertEquals($fillable, $this->category->getFillable());
     }
 
-    public function testCasts()
+    public function testDatesAttribute()
     {
-      $expected = ['id' => 'string', 'is_active' => 'bool'];
-      $this->assertEqualsCanonicalizing($expected, $this->category->getCasts());
+        $dates = ['deleted_at', 'created_at', 'updated_at'];
+        foreach ($dates as $date) {
+            $this->assertContains($date, $this->category->getDates());
+        }
+        $this->assertCount(count($dates), $this->category->getDates());
     }
 
-    public function testIncrementing()
+    public function testCatsAttribute()
     {
-      $this->assertFalse($this->category->incrementing);
+        $casts = ['id' => 'string', 'is_active' => 'boolean'];
+        $this->assertEquals($casts, $this->category->getCasts());
     }
 
-    public function testDatesAttributes()
+    public function testIncrementingAttribute()
     {
-      $expected = ['deleted_at', 'created_at', 'updated_at'];
-      foreach ($expected as $date) {
-        $this->assertContains($date, $this->category->getDates());
-      }
-      $this->assertCount(count($expected), $this->category->getDates());
+        $this->assertFalse($this->category->incrementing);
     }
-
 
 
 }

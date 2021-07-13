@@ -2,11 +2,19 @@
 
 namespace Tests\Unit\Models;
 
+use App\Models\Traits\SerializeDateToIso8601;
+use App\Models\Traits\UploadFiles;
 use App\Models\Video;
 use App\Models\Traits\Uuid;
-use App\Models\Traits\UploadFiles;
+use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+# Classe especifica               - vendor/bin/phpunit tests/Unit/VideoTest.php
+# Método especifico em um arquivo - vendor/bin/phpunit --filter testIfUseTraits tests/Unit/VideoTest.php
+# Método especifico em uma classe - vendor/bin/phpunit --filter VideoTest::testIfUseTraits
 
 class VideoUnitTest extends TestCase
 {
@@ -14,62 +22,64 @@ class VideoUnitTest extends TestCase
 
     protected function setUp(): void
     {
-      parent::setUp();
-      $this->video = new Video();
+        parent::setUp();
+        $this->video = new Video();
     }
 
-    protected function tearDown(): void
-    {
-      parent::tearDown();
-    }
 
     public function testIfUseTraits()
     {
-      $expected = [SoftDeletes::class, Uuid::class, UploadFiles::class];
-      $actual = array_keys(class_uses(Video::class));
-      $this->assertEqualsCanonicalizing($expected, $actual);
+        $traits = [
+            SoftDeletes::class,
+            Uuid::class,
+            UploadFiles::class,
+            SerializeDateToIso8601::class
+        ];
+        $videoTraits = array_keys(class_uses(Video::class));
+        $this->assertEquals($traits, $videoTraits);
     }
 
-    public function testFillable()
+    public function testFillableAttribute()
     {
-      $fillable = [
-        'title',
-        'description',
-        'year_launched',
-        'opened',
-        'rating',
-        'duration',
-        'video_file',
-        'thumb_file',
-        'banner_file',
-        'trailer_file',
-      ];
-      $this->assertEqualsCanonicalizing($fillable, $this->video->getFillable());
+        $fillable = [
+            'title',
+            'description',
+            'year_launched',
+            'opened',
+            'rating',
+            'duration',
+            'video_file',
+            'thumb_file',
+            'banner_file',
+            'trailer_file',
+        ];
+        $this->assertEquals($fillable, $this->video->getFillable());
     }
 
-    public function testCasts()
+    public function testDatesAttribute()
     {
-      $expected = [
-        'id' => 'string',
-        'opened' => 'boolean',
-        'year_launched' => 'integer',
-        'duration' => 'integer'
-      ];
-      $this->assertEqualsCanonicalizing($expected, $this->video->getCasts());
+        $dates = ['deleted_at', 'created_at', 'updated_at'];
+        foreach ($dates as $date) {
+            $this->assertContains($date, $this->video->getDates());
+        }
+        $this->assertCount(count($dates), $this->video->getDates());
     }
 
-    public function testIncrementing()
+    public function testCatsAttribute()
     {
-      $this->assertFalse($this->video->incrementing);
+        $casts = [
+            'id' => 'string',
+            'opened' => 'boolean',
+            'year_launched' => 'integer',
+            'duration' => 'integer'
+        ];
+        $this->assertEquals($casts, $this->video->getCasts());
     }
 
-    public function testDatesAttributes()
+    public function testIncrementingAttribute()
     {
-      $expected = ['deleted_at', 'created_at', 'updated_at'];
-      foreach ($expected as $date) {
-        $this->assertContains($date, $this->video->getDates());
-      }
-      $this->assertCount(count($expected), $this->video->getDates());
+        $this->assertFalse($this->video->incrementing);
     }
+
 
 }

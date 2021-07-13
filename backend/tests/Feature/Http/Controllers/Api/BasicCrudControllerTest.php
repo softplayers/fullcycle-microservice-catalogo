@@ -13,6 +13,7 @@ use Tests\TestCase;
 class BasicCrudControllerTest extends TestCase
 {
     private $controller;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -29,10 +30,19 @@ class BasicCrudControllerTest extends TestCase
 
     public function testIndex()
     {
-
+        /** @var CategoryStub $category */
         $category = CategoryStub::create(['name' => 'test_name', 'description' => 'test_description']);
-        $result = $this->controller->index();
-        $serialized = $result->response()->getData(true);
+        $request = \Mockery::mock(Request::class);
+        $request
+            ->shouldReceive('get')
+            ->once()
+            ->andReturn([]);
+        $request
+            ->shouldReceive('has')
+            ->once()
+            ->andReturn(false);
+        $resource = $this->controller->index($request);
+        $serialized = $resource->response()->getData(true);
         $this->assertEquals(
             [$category->toArray()],
             $serialized['data']
@@ -50,7 +60,6 @@ class BasicCrudControllerTest extends TestCase
             ->shouldReceive('all')
             ->once()
             ->andReturn(['name' => '']);
-
         $this->controller->store($request);
     }
 
@@ -62,22 +71,24 @@ class BasicCrudControllerTest extends TestCase
             ->once()
             ->andReturn(['name' => 'test_name', 'description' => 'test_description']);
 
-        $result = $this->controller->store($request);
-        $serialized = $result->response()->getData(true);
-        $this->assertEquals(CategoryStub::first()->toArray(), $serialized['data']);
+        $resource = $this->controller->store($request);
+        $serialized = $resource->response()->getData(true);
+        $this->assertEquals( CategoryStub::first()->toArray(), $serialized['data']);
     }
 
     public function testIfFindOrFailFetchModel()
     {
+        /** @var CategoryStub $category */
         $category = CategoryStub::create(['name' => 'test_name', 'description' => 'test_description']);
 
         $reflectionClass = new \ReflectionClass(BasicCrudController::class);
         $reflectionMethod = $reflectionClass->getMethod('findOrFail');
         $reflectionMethod->setAccessible(true);
 
-        $result = $reflectionMethod->invokeArgs($this->controller, [$category->id]);
-        $this->assertInstanceOf(CategoryStub::class, $result);
+        $resource = $reflectionMethod->invokeArgs($this->controller, [$category->id]);
+        $this->assertInstanceOf(CategoryStub::class, $resource);
     }
+
 
     public function testIfFindOrFailThrowExceptionWhenIdInvalid()
     {
@@ -87,17 +98,14 @@ class BasicCrudControllerTest extends TestCase
         $reflectionMethod = $reflectionClass->getMethod('findOrFail');
         $reflectionMethod->setAccessible(true);
 
-        $result = $reflectionMethod->invokeArgs($this->controller, [0]);
-        $this->assertInstanceOf(CategoryStub::class, $result);
+        $reflectionMethod->invokeArgs($this->controller, [0]);
     }
 
     public function testShow()
     {
         $category = CategoryStub::create(['name' => 'test_name', 'description' => 'test_description']);
-
-        $result = $this->controller->show($category->id);
-
-        $serialized = $result->response()->getData(true);
+        $resource = $this->controller->show($category->id);
+        $serialized = $resource->response()->getData(true);
         $this->assertEquals($category->toArray(), $serialized['data']);
     }
 
@@ -105,26 +113,27 @@ class BasicCrudControllerTest extends TestCase
     {
         $category = CategoryStub::create(['name' => 'test_name', 'description' => 'test_description']);
         $request = \Mockery::mock(Request::class);
-        $request
-            ->shouldReceive('all')
+        $request->shouldReceive('all')
             ->once()
-            ->andReturn(['name' => 'test_name_updated', 'description' => 'test_description_updated']);
-
-        $result = $this->controller->update($request, $category->id);
-
-        $serialized = $result->response()->getData(true);
+            ->andReturn(['name' => 'test_changed', 'description' => 'test_description_changed']);
+        $request
+            ->shouldReceive('isMethod')
+            ->once()
+            ->andReturn('put');
+        $resource = $this->controller->update($request, $category->id);
+        $serialized = $resource->response()->getData(true);
         $category->refresh();
-        $this->assertEquals($category->toArray(), $serialized['data']);
+        $this->assertEquals( $category->toArray(), $serialized['data']);
     }
 
     public function testDestroy()
     {
         $category = CategoryStub::create(['name' => 'test_name', 'description' => 'test_description']);
         $response = $this->controller->destroy($category->id);
-
         $this
             ->createTestResponse($response)
             ->assertStatus(204);
         $this->assertCount(0, CategoryStub::all());
     }
+
 }

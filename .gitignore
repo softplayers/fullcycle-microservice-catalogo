@@ -1,8 +1,5 @@
-.docker/dbdata/
 .idea/
 .vscode/
-.history/
-.devcontainer/
+.docker/dbdata/
 .npm-cache/
-/frontend/.eslintcache
-.dccache
+.history/

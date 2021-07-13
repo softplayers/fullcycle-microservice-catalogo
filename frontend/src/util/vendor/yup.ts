@@ -1,15 +1,16 @@
-import { setLocale } from 'yup';
+import {LocaleObject, setLocale} from 'yup';
 
-const ptBR = {
-  mixed: {
-    required: '${path} é obrigatório',
-  },
-  string: {
-    max: '${path} precisa ter no máximo ${max} caracteres',
-  },
-  number: {
-    min: '${path} precisa ter no máximo ${min}',
-  },
+const ptBR: LocaleObject = {
+    mixed: {
+        required: '${path} é requerido',
+        notType: '${path} é inválido'
+    },
+    string: {
+        max: '${path} precisa ter no máximo ${max} caracteres'
+    },
+    number: {
+        min: '${path} precisa ser no mínimo ${min}'
+    }
 };
 
 setLocale(ptBR);

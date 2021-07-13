@@ -1,16 +1,27 @@
-<?php 
+<?php
 
 namespace App\ModelFilters;
 
-use EloquentFilter\ModelFilter;
+
+use Illuminate\Database\Eloquent\Builder;
 
 class CategoryFilter extends DefaultModelFilter
 {
- 
+
     protected $sortable = ['name', 'is_active', 'created_at'];
 
-    public function search($search) 
+
+    public function search($search)
     {
-        $this->query->where('name', 'LIKE', "%$search%");
+        $this->where('name', 'LIKE', "%$search%");
+    }
+
+    public function genres($genres)
+    {
+        $ids = explode(",", $genres);
+        $this->whereHas('genres', function (Builder $query) use ($ids) {
+            $query
+                ->whereIn('id', $ids);
+        });
     }
 }

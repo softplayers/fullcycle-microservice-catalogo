@@ -1,9 +1,10 @@
 <?php
 
+
 namespace Tests\Exceptions;
 
 
-class TestException extends \Exception 
+class TestException extends \Exception
 {
 
 }

@@ -1,201 +1,196 @@
-// @flow
-import { yupResolver } from '@hookform/resolvers/yup';
+import * as React from 'react';
 import {
-  Checkbox,
-
-  FormControlLabel,
-  MenuItem, Select, TextField
+    Box,
+    Button,
+    makeStyles, MenuItem,
+    TextField,
+    Theme
 } from "@material-ui/core";
-import { useSnackbar } from 'notistack';
-import * as React from "react";
-import { useForm } from "react-hook-form";
-import { useHistory, useParams } from 'react-router';
-import SubmitActions from '../../components/SubmitActions';
+import {ButtonProps} from "@material-ui/core/Button";
+import {useForm} from "react-hook-form";
+import {useEffect, useState} from "react";
 import categoryHttp from "../../util/http/category-http";
 import genreHttp from "../../util/http/genre-http";
-import { Category, Genre } from '../../util/models';
+import {useSnackbar} from "notistack";
+import {useHistory, useParams} from "react-router";
 import * as yup from '../../util/vendor/yup';
+import {Category, Genre} from "../../util/models";
+import {DefaultForm} from "../../components/DefaultForm";
 
+const useStyles = makeStyles((theme: Theme) => {
+    return {
+        submit: {
+            margin: theme.spacing(1)
+        }
+    }
+});
 
 const validationSchema = yup.object().shape({
-  name: yup
-    .string()
-    .label('Nome')
-    .required(),
-  categories_id: yup
-    .array(yup.string())
-    .label('Categories')
-    .min(1),
-})
+    name: yup.string()
+        .label('Nome')
+        .required()
+        .max(255),
+    categories_id: yup.array()
+        .label('Categorias')
+        .required(),
+});
 
 export const Form = () => {
-  const history = useHistory();
-  const snackbar = useSnackbar();
 
-  const { register, handleSubmit, getValues, setValue, errors, reset, watch, trigger } = useForm({
-    resolver: yupResolver(validationSchema),
-    defaultValues: {
-      name: null,
-      is_active: true,
-      categories_id: [],
+
+    const {
+        register,
+        handleSubmit,
+        getValues,
+        setValue,
+        watch,
+        errors,
+        reset
+    } = useForm<{name, categories_id}>({
+        validationSchema,
+        defaultValues: {
+            categories_id: []
+        }
+    });
+
+    const classes = useStyles();
+    const {enqueueSnackbar} = useSnackbar();
+    const history = useHistory();
+    const {id} = useParams();
+    const [genre, setGenre] = useState<Genre | null>(null);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+
+    const buttonProps: ButtonProps = {
+        className: classes.submit,
+        color: 'secondary',
+        variant: 'contained',
+        disabled: loading
+    };
+
+    useEffect(() => {
+        let isSubscribed = true;
+        (async () => {
+            setLoading(true);
+            const promises = [categoryHttp.list({queryParams: {all: ''}})];
+            if (id) {
+                promises.push(genreHttp.get(id));
+            }
+            try {
+                const [categoriesResponse, genreResponse] = await Promise.all(promises);
+                if (isSubscribed) {
+                    setCategories(categoriesResponse.data.data);
+                    if (id) {
+                        setGenre(genreResponse.data.data);
+                        const categories_id = genreResponse.data.data.categories.map(category => category.id);
+                        reset({
+                            ...genreResponse.data.data,
+                            categories_id
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                enqueueSnackbar(
+                    'Não foi possível carregar as informações',
+                    {variant: 'error',}
+                )
+            } finally {
+                setLoading(false);
+            }
+        })();
+
+        return () => {
+            isSubscribed = false;
+        }
+    }, [id, reset, enqueueSnackbar]); //[]
+
+    //id /genres/1
+
+    //
+
+    useEffect(() => {
+        register({name: "categories_id"})
+    }, [register]);
+
+    async function onSubmit(formData, event) {
+        setLoading(true);
+        try {
+            const http = !genre
+                ? genreHttp.create({})
+                : genreHttp.update(genre.id, formData);
+            const {data} = await http;
+            enqueueSnackbar(
+                'Gênero salvo com sucesso',
+                {variant: 'success'}
+            );
+            setTimeout(() => {
+                event
+                    ? (
+                        id
+                            ? history.replace(`/genres/${data.data.id}/edit`)
+                            : history.push(`/genres/${data.data.id}/edit`)
+                    )
+                    : history.push('/genres')
+            });
+        } catch (error) {
+            console.error(error);
+            enqueueSnackbar(
+                'Não foi possível salvar o gênero',
+                {variant: 'error'}
+            )
+        } finally {
+            setLoading(false)
+        }
     }
-  });
 
-
-  const { id } = useParams<any>();
-  const [genre, setGenre] = React.useState<Genre | null>(null);
-  const [allCategories, setAllCategories] = React.useState([] as Category[]);
-  const [loading, setLoading] = React.useState<boolean>(false);
-
-
-  React.useEffect(() => {
-    let isSubscribed = true;
-
-    (async () => {
-      console.log('[Genre] useEffect start');
-      setLoading(true);
-
-      const promises = [categoryHttp.list({queryParams: {all: ''}})];
-
-      if (id) {
-        promises.push(genreHttp.get(id));
-      }
-
-      try {
-        const [categoriesResponse, genreResponse] = await Promise.all(promises);
-
-        if (!isSubscribed) {
-          return;
-        }
-
-        setAllCategories(categoriesResponse.data.data);
-
-        if (id) {
-          const categories_id = genreResponse.data.data.categories.map(c => c.id);
-          const data_categories = { ...genreResponse.data.data, categories_id };
-          setGenre(data_categories);
-          reset(data_categories);
-        }
-
-      } catch (error) {
-        console.error(error);
-        snackbar.enqueueSnackbar(
-          'Não foi possível carregar as informações',
-          { variant: 'error' }
-        );
-      } finally {
-        setLoading(false);
-      }
-    })();
-    return () => { isSubscribed = false };
-  }, [id, reset, snackbar]);
-
-  React.useEffect(() => {
-    register({ name: 'is_active' });
-    register({ name: 'categories_id' });
-  }, [register]);
-
-  const handleCategoryChange = (event) => {
-    console.log('[Genre] handleCategoryChange', event);
-    setValue('categories_id', event.target.value)
-  };
-
-  const onSubmit = (data, event) => {
-    console.log('[Genre] onSubmit');
-    // const data_categories = {...data, categories_id: selectedCategories}
-    const data_categories = data
-    console.log(data_categories, event);
-    setLoading(true);
-
-    const http = genre
-      ? genreHttp.update(genre.id, data_categories)
-      : genreHttp.create(data_categories);
-
-    http
-      .then(({ data }) => {
-        console.log('[Genre] onSubmit .. data:', data);
-        snackbar.enqueueSnackbar('Gënero salvo com sucesso!', { variant: 'success' });
-
-        setTimeout(() => {
-          if (!event) {
-            history.push(`/genres`);
-            return;
-          }
-
-          if (id) {
-            history.replace(`/genres/${data.data.id}/edit`)
-            return;
-          }
-
-          history.push(`/genres`);
-        })
-      })
-      .catch(error => {
-        console.error(error);
-        snackbar.enqueueSnackbar('Erro ao salvar!', { variant: 'error' });
-      })
-      .finally(() => setLoading(false));
-  };
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <TextField
-        name="name"
-        label="Nome"
-        fullWidth
-        variant={"outlined"}
-        inputRef={register}
-        disabled={loading}
-        error={!!errors.name}
-        InputLabelProps={{ shrink: true }}
-      />
-      {
-        errors.name?.message &&
-        (<p>{errors.name.message}</p>)
-      }
-
-      <Select
-        name="categories_id"
-        label="Categorias"
-        variant={"outlined"}
-        value={watch('categories_id')}
-        onChange={handleCategoryChange}
-        disabled={loading}
-        error={!!errors.categories_id}
-        fullWidth
-        multiple>
-        <MenuItem value="" disabled>
-          Selecione as categorias
-          </MenuItem>
-        {allCategories.map(category => (
-          <MenuItem key={category.id} value={category.id}>
-            {category.name}
-          </MenuItem>
-        ))}
-      </Select>
-      {
-        errors.categories_id &&
-        (<p>{(errors.categories_id as any).message}</p>)
-      }
-      <FormControlLabel
-        disabled={loading}
-        control={
-          <Checkbox
-            name="is_active"
-            color="primary"
-            onChange={() => setValue('is_active', !getValues()['is_active'])}
-            checked={watch('is_active')}
-          />
-        }
-        label="Ativo?"
-        labelPlacement="end"
-      />
-
-      <SubmitActions disabledButtons={loading} handleSave={() =>
-        trigger().then(isValid => {
-          isValid && onSubmit(getValues(), null)
-        })
-      }></SubmitActions>
-    </form>
-  );
+    return (
+        <DefaultForm GridItemProps={{xs: 12, md: 6}} onSubmit={handleSubmit(onSubmit)}>
+            <TextField
+                name="name"
+                label="Nome"
+                fullWidth
+                variant={"outlined"}
+                inputRef={register}
+                disabled={loading}
+                error={errors.name !== undefined}
+                helperText={errors.name && errors.name.message}
+                InputLabelProps={{shrink: true}}
+            />
+            <TextField
+                select
+                name="categories_id"
+                value={watch('categories_id')}
+                label="Categorias"
+                margin={'normal'}
+                variant={'outlined'}
+                fullWidth
+                onChange={(e) => {
+                    setValue('categories_id', e.target.value);
+                }}
+                SelectProps={{
+                    multiple: true
+                }}
+                disabled={loading}
+                error={errors.categories_id !== undefined}
+                helperText={errors.categories_id && errors.categories_id.message}
+                InputLabelProps={{shrink: true}}
+            >
+                <MenuItem value="" disabled>
+                    <em>Selecione categorias</em>
+                </MenuItem>
+                {
+                    categories.map(
+                        (category, key) => (
+                            <MenuItem key={key} value={category.id}>{category.name}</MenuItem>
+                        )
+                    )
+                }
+            </TextField>
+            <Box dir={"rtl"}>
+                <Button {...buttonProps} onClick={() => onSubmit(getValues(), null)}>Salvar</Button>
+                <Button {...buttonProps} type="submit">Salvar e continuar editando</Button>
+            </Box>
+        </DefaultForm>
+    );
 };

@@ -1,98 +1,107 @@
-// @flow 
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Checkbox, FormControlLabel, TextField } from '@material-ui/core';
-import { useSnackbar } from 'notistack';
 import * as React from 'react';
-import { useForm } from "react-hook-form";
-import { useHistory, useParams } from 'react-router';
-import { DefaultForm } from '../../components/DefaultForm';
-import SubmitActions from '../../components/SubmitActions';
-import categoryHttp from '../../util/http/category-http';
-import { Category } from '../../util/models';
+import {Checkbox, FormControlLabel, TextField} from "@material-ui/core";
+import {useForm} from "react-hook-form";
+import categoryHttp from "../../util/http/category-http";
 import * as yup from '../../util/vendor/yup';
-
+import {useEffect, useState} from "react";
+import {useParams, useHistory} from "react-router";
+import {useSnackbar} from "notistack";
+import {Category} from "../../util/models";
+import SubmitActions from "../../components/SubmitActions";
+import {DefaultForm} from "../../components/DefaultForm";
+import {useContext} from "react";
+import LoadingContext from "../../components/loading/LoadingContext";
 
 const validationSchema = yup.object().shape({
-    name: yup
-        .string()
+    name: yup.string()
         .label('Nome')
-        .required(),
-})
-
-
-interface IFormInputs {
-    name: string
-    description: string
-    is_active: boolean
-}
+        .required()
+        .max(255),
+});
 
 export const Form = () => {
-    const history = useHistory();
-    const snackbar = useSnackbar();
-
-    const { register, handleSubmit, getValues, setValue, errors, reset, watch, trigger } = useForm<IFormInputs>({
-        resolver: yupResolver(validationSchema),
+    const {
+        register,
+        handleSubmit,
+        getValues,
+        setValue,
+        errors,
+        reset,
+        watch,
+        triggerValidation
+    } = useForm<{name, is_active}>({
+        validationSchema,
         defaultValues: {
-            is_active: true,
+            is_active: true
         }
     });
 
-    const { id } = useParams<any>();
-    const [category, setCategory] = React.useState<Category | null>(null);
-    const [loading, setLoading] = React.useState<boolean>(false);
+    const snackbar = useSnackbar();
+    const history = useHistory();
+    const {id} = useParams();
+    const [category, setCategory] = useState<Category | null>(null);
+    const loading = useContext(LoadingContext);
 
-    React.useEffect(() => {
-        if (!id) return;
-        setLoading(true);
+    useEffect(() => {
+        if (!id) {
+            return;
+        }
+        let isSubscribed = true;
+        //iife
+        (async () => {
+            try {
+                const {data} = await categoryHttp.get(id);
+                if (isSubscribed) {
+                    setCategory(data.data);
+                    reset(data.data);
+                }
+            } catch (error) {
+                console.error(error);
+                snackbar.enqueueSnackbar(
+                    'Não foi possível carregar as informações',
+                    {variant: 'error',}
+                )
+            }
+        })();
+        return () => {
+            isSubscribed = false;
+        }
+    }, []);
 
-        categoryHttp
-            .get(id)
-            .then(({ data }) => {
-                setCategory(data.data);
-                reset(data.data);
-            })
-            .finally(() => setLoading(false));
-    }, [id, reset]);
-
-    React.useEffect(() => {
-        register({ name: 'is_active' });
+    useEffect(() => {
+        register({name: "is_active"})
     }, [register]);
 
-    const onSubmit = (data, event) => {
-        console.log(data, event);
-        setLoading(true);
-
-        const http = category
-            ? categoryHttp.update(category.id, data)
-            : categoryHttp.create(data);
-
-        http
-            .then(({ data }) => {
-                const hasEvent = !!event;
-                snackbar.enqueueSnackbar('Categoria salva com sucesso!', { variant: 'success' });
-
-                if (!hasEvent) {
-                    history.push(`/categories`);
-                    return;
-                }
-
-                if (id) {
-                    history.replace(`/categories/${data.data.id}/edit`)
-                    return;
-                }
-
-                history.push(`/categories/${data.data.id}/edit`);
-            })
-            .catch(error => {
-                console.error(error);
-                snackbar.enqueueSnackbar('Erro ao salvar!', { variant: 'error' });
-            })
-            .finally(() => setLoading(false));
+    async function onSubmit(formData, event) {
+        try {
+            const http = !category
+                ? categoryHttp.create(formData)
+                : categoryHttp.update(category.id, formData);
+            const {data} = await http;
+            snackbar.enqueueSnackbar(
+                'Categoria salva com sucesso',
+                {variant: 'success'}
+            );
+            setTimeout(() => {
+                event
+                    ? (
+                        id
+                            ? history.replace(`/categories/${data.data.id}/edit`)
+                            : history.push(`/categories/${data.data.id}/edit`)
+                    )
+                    : history.push('/categories')
+            });
+        } catch (error) {
+            console.error(error);
+            snackbar.enqueueSnackbar(
+                'Não foi possível salvar a categoria',
+                {variant: 'error'}
+            )
+        }
     }
 
     return (
         <DefaultForm GridItemProps={{xs: 12, md: 6}} onSubmit={handleSubmit(onSubmit)}>
-
             <TextField
                 name="name"
                 label="Nome"
@@ -100,15 +109,10 @@ export const Form = () => {
                 variant={"outlined"}
                 inputRef={register}
                 disabled={loading}
-                error={!!errors.name}
-                helperText={errors.name?.message}
-                InputLabelProps={{ shrink: true }}
+                error={errors.name !== undefined}
+                helperText={errors.name && errors.name.message}
+                InputLabelProps={{shrink: true}}
             />
-            {
-                errors.name && errors.name.type === 'required' &&
-                (<p>{errors.name?.message}</p>)
-            }
-
             <TextField
                 name="description"
                 label="Descrição"
@@ -117,31 +121,33 @@ export const Form = () => {
                 fullWidth
                 variant={"outlined"}
                 margin={"normal"}
-                disabled={loading}
                 inputRef={register}
-                InputLabelProps={{ shrink: true }}
+                disabled={loading}
+                InputLabelProps={{shrink: true}}
             />
-
             <FormControlLabel
                 disabled={loading}
                 control={
                     <Checkbox
                         name="is_active"
-                        color="primary"
-                        onChange={() => setValue('is_active', !getValues()['is_active'])}
+                        color={"primary"}
+                        onChange={
+                            () => setValue('is_active', !getValues()['is_active'])
+                        }
                         checked={watch('is_active')}
                     />
                 }
-                label="Ativo?"
-                labelPlacement="end"
+                label={'Ativo?'}
+                labelPlacement={'end'}
             />
-
-            <SubmitActions disabledButtons={loading} handleSave={() =>
-                trigger().then(isValid => {
-                    isValid && onSubmit(getValues(), null)
-                })
-            }></SubmitActions>
-
+            <SubmitActions
+                disabledButtons={loading}
+                handleSave={() =>
+                    triggerValidation().then(isValid => {
+                        isValid && onSubmit(getValues(), null)
+                    })
+                }
+            />
         </DefaultForm>
-    )
-}
+    );
+};

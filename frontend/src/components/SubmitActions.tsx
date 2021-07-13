@@ -1,6 +1,6 @@
-// @flow 
-import { Box, Button, ButtonProps, makeStyles, Theme } from '@material-ui/core';
 import * as React from 'react';
+import {Box, Button, makeStyles, Theme} from "@material-ui/core";
+import {ButtonProps} from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme: Theme) => {
     return {
@@ -10,24 +10,27 @@ const useStyles = makeStyles((theme: Theme) => {
     }
 });
 
-type SubmitActionsProps = {
-    disabledButtons?: boolean,
-    handleSave: () => void
-};
 
-const SubmitActions = (props: SubmitActionsProps) => {
+interface SubmitActionsProps {
+    disabledButtons?: boolean;
+    handleSave: () => void
+}
+
+const SubmitActions: React.FC<SubmitActionsProps> = (props) => {
+
     const classes = useStyles();
 
     const buttonProps: ButtonProps = {
         className: classes.submit,
         color: 'secondary',
-        variant: "contained",
-        disabled: !!props.disabledButtons,
-    }
-
+        variant: 'contained',
+        disabled: props.disabledButtons === undefined ? false : props.disabledButtons
+    };
     return (
-        <Box dir={'rtl'}>
-            <Button {...buttonProps} type="button" onClick={props.handleSave} color="primary">Salvar</Button>
+        <Box dir={"ltf"}>
+            <Button color={"primary"} {...buttonProps} onClick={props.handleSave}>
+                Salvar
+            </Button>
             <Button {...buttonProps} type="submit">Salvar e continuar editando</Button>
         </Box>
     );

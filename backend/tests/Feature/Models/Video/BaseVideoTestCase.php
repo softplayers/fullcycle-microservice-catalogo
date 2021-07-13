@@ -1,25 +1,20 @@
 <?php
 
-
 namespace Tests\Feature\Models\Video;
 
-
-use App\Models\Category;
-use App\Models\Genre;
 use App\Models\Video;
-use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
 abstract class BaseVideoTestCase extends TestCase
 {
     use DatabaseMigrations;
+
     protected $data;
 
     protected function setUp(): void
     {
         parent::setUp();
-
         $this->data = [
             'title' => 'title',
             'description' => 'description',
