@@ -13,10 +13,18 @@ return [
     |
     */
 
+    // ORIGINAL
+    'defaults' => [
+        'guard' => 'web',
+        'passwords' => 'users',
+    ],
+    // KEYCLOAK OFF
+    /*
     'defaults' => [
         'guard' => 'api',
         'passwords' => 'users',
     ],
+    // KEYCLOAK OFF
 
     /*
     |--------------------------------------------------------------------------
@@ -35,6 +43,20 @@ return [
     |
     */
 
+    // ORIGINAL
+    'guards' => [
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+        'api' => [
+            'driver' => 'token',
+            'provider' => 'users',
+            'hash' => false,
+        ],
+    ],
+    // KEYCLOAK OFF
+    /*
     'guards' => [
         'web' => [
             'driver' => 'keycloak-web',
@@ -46,6 +68,9 @@ return [
             'provider' => null,
         ],
     ],
+    */
+    // KEYCLOAK OFF
+
 
     /*
     |--------------------------------------------------------------------------

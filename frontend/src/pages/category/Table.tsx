@@ -14,7 +14,7 @@ import {FilterResetButton} from "../../components/Table/FilterResetButton";
 import useFilter from "../../hooks/useFilter";
 import {useContext} from "react";
 import LoadingContext from "../../components/loading/LoadingContext";
-import { useKeycloak } from '@react-keycloak/web';
+// import { useKeycloak } from '@react-keycloak/web';   // const { keycloak, initialized } = useKeycloak();
 
 const columnsDefinition: TableColumn[] = [
     {
@@ -85,8 +85,10 @@ const debouncedSearchTime = 300;
 const rowsPerPage = 15;
 const rowsPerPageOptions = [15, 25, 50];
 const Table = () => {
+    /* // KEYCLOAK OFF
     const obj = useKeycloak();
     console.log(obj);
+    */
     const snackbar = useSnackbar();
     const subscribed = useRef(true);
     const [data, setData] = useState<Category[]>([]);

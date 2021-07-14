@@ -8,8 +8,12 @@ export const httpVideo = axios.create({
 const instances = [httpVideo];
 httpVideo.interceptors.request.use(authInterceptor);
 
-function authInterceptor(request: AxiosRequestConfig): AxiosRequestConfig | Promise<AxiosRequestConfig>{
-    if(keycloak?.token){
+function authInterceptor(request: AxiosRequestConfig): AxiosRequestConfig | Promise<AxiosRequestConfig> {
+    // KEYCLOAK OFF
+    return request;
+    // KEYCLOAK OFF
+
+    if (keycloak?.token){
         addToken(request);
         return request;
     }

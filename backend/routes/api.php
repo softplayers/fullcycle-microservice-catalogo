@@ -13,6 +13,16 @@ use Illuminate\Http\Request;
 |
 */
 
+// ORIGINAL
+Route::group(['namespace' => 'Api'], function () {
+    $exceptCreateAndEdit = ['except' => ['create', 'edit']];
+    Route::resource('categories', 'CategoryController', $exceptCreateAndEdit);
+    Route::resource('genres', 'GenreController', $exceptCreateAndEdit);
+    Route::resource('cast_members', 'CastMemberController', $exceptCreateAndEdit);
+    Route::resource('videos', 'VideoController', $exceptCreateAndEdit);
+});
+// KEYCLOAK OFF
+/*
 Route::group(['namespace' => 'Api', 'middleware' => [
     'auth:api',
     'can:catalog-admin'
@@ -29,3 +39,4 @@ Route::group(['namespace' => 'Api', 'middleware' => [
     Route::resource('videos', 'VideoController', $exceptCreateAndEdit);
     Route::delete('videos', 'VideoController@destroyCollection');
 });
+*/

@@ -6,11 +6,13 @@ import routes from "./index";
 import PrivateRoute from "./PrivateRoute";
 
 const AppRouter = () => {
+  /* // KEYCLOAK OFF
   const {keycloak, initialized} = useKeycloak();
 
   if (!initialized) {
     return <Waiting/>;
   }
+  */ // KEYCLOAK OFF
   
   return (
     <Switch>

@@ -9,7 +9,7 @@ import {
 import MenuIcon from "@material-ui/icons/Menu";
 import routes, { MyRouteProps } from "../../routes";
 import { Link } from "react-router-dom";
-import { useKeycloak } from "@react-keycloak/web";
+// import { useKeycloak } from "@react-keycloak/web"; // KEYCLOAK OFF
 import { useHasRealmRole } from "../../hooks/useHasRole";
 
 const listRoutes = {
