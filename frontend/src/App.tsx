@@ -20,7 +20,7 @@ const App: React.FC = () => {
                     <SnackbarProvider>
                         <CssBaseline/>
                         <BrowserRouter basename={process.env.REACT_APP_BASENAME}>
-                            <Spinner/>
+                            {/* <Spinner/> */}
                             <Navbar/>
                             <Box paddingTop={'70px'}>
                                 <Breadcrumbs/>
