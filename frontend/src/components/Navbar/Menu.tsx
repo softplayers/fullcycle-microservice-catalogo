@@ -17,8 +17,10 @@ const listRoutes = {
   "categories.list": "Categorias",
   "cast_members.list": "Membros de elenco",
   "genres.list": "Gêneros",
+  /* TODO: USER OFF
   "videos.list": "Vídeos",
   uploads: "Uploads",
+  */
 };
 
 const menuRoutes = routes.filter((route) =>
@@ -73,6 +75,7 @@ export const Menu = () => {
             </MenuItem>
           );
         })}
+        {/* TODO: USER OFF
         <Divider />
         <MenuItem
           component={MuiLink}
@@ -84,6 +87,7 @@ export const Menu = () => {
         >
           Usuários
         </MenuItem>
+        */}
       </MuiMenu>
     </React.Fragment>
   );
