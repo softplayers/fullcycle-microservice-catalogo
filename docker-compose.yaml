@@ -16,7 +16,7 @@ services:
             - ./.docker/php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
         networks:
             - app-network
-            #- rabbitmq_codeflix
+            - fullcycle-go-encoder_codeflix
         depends_on:
             - db
             - redis
@@ -34,6 +34,7 @@ services:
             - .:/var/www
         networks:
             - app-network
+            - fullcycle-go-encoder_codeflix
         depends_on:
             - app
 
@@ -71,5 +72,5 @@ services:
 networks:
     app-network:
         driver: bridge
-    #rabbitmq_codeflix:
-        #external: true
+    fullcycle-go-encoder_codeflix:
+        external: true
