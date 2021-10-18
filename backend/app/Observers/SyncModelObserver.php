@@ -119,7 +119,7 @@ class SyncModelObserver
             json_encode($data),
             [
                 'content_type' => 'application/json',
-                // 'delivery_mode' => 2 //persistent
+                /**/'delivery_mode' => 2 //persistent
             ]
         );
         \Amqp::publish(
