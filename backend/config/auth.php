@@ -44,7 +44,7 @@ return [
     */
 
     // ORIGINAL
-    'guards' => [
+   /*  'guards' => [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
@@ -54,9 +54,9 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
-    ],
+    ], */
+
     // KEYCLOAK OFF
-    /*
     'guards' => [
         'web' => [
             'driver' => 'keycloak-web',
@@ -68,7 +68,6 @@ return [
             'provider' => null,
         ],
     ],
-    */
     // KEYCLOAK OFF
 
 
