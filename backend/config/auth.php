@@ -14,12 +14,13 @@ return [
     */
 
     // ORIGINAL
+    /**/
     'defaults' => [
         'guard' => 'web',
         'passwords' => 'users',
     ],
-    // KEYCLOAK OFF
-    /*
+    // KEYCLOAK ON
+    /**-/
     'defaults' => [
         'guard' => 'api',
         'passwords' => 'users',
@@ -56,7 +57,7 @@ return [
         ],
     ], */
 
-    // KEYCLOAK OFF
+    // KEYCLOAK ON
     'guards' => [
         'web' => [
             'driver' => 'keycloak-web',

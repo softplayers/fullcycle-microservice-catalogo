@@ -15,10 +15,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// KEYCLOAK OFF
-/*
-//Route::middleware('auth')->group(function() {
-Route::group([], function(){
+// KEYCLOAK ON
+/**/
+Route::middleware('auth')->group(function() {
+//Route::group([], function(){
     Route::get('/admin/{react?}', function ($react = null) {
         //dd(session('_keycloak_token'));
         return view('admin-frontend.index');
@@ -26,5 +26,5 @@ Route::group([], function(){
 });
 
 //http://localhost:8000/admin/categories
-*/
+/**/
 // KEYCLOAK OFF

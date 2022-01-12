@@ -27,8 +27,8 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        // KEYCLOAK OFF
-        /*
+        // KEYCLOAK ON
+        /**/
         \Auth::extend('keycloak', function ($app, $name, $config){
             return new KeycloakGuard(
                 $app['tymon.jwt'],
@@ -39,7 +39,7 @@ class AuthServiceProvider extends ServiceProvider
         \Gate::define('catalog-admin', function(User $user){
             return $user->hasRole('catalog-admin');
         });
-        */
+        /**/
         // KEYCLOAK OFF
     }
 }
