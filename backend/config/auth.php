@@ -14,13 +14,13 @@ return [
     */
 
     // ORIGINAL
-    /**/
+    /**-/
     'defaults' => [
         'guard' => 'web',
         'passwords' => 'users',
     ],
     // KEYCLOAK ON
-    /**-/
+    /**/
     'defaults' => [
         'guard' => 'api',
         'passwords' => 'users',

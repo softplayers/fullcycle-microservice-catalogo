@@ -57,7 +57,7 @@ class KeycloakGuard implements Guard
      */
     public function validate(array $credentials = [])
     {
-        throw new \Exception('Not implemented');
+        throw new \Exception('Not implemented'); // form login
     }
 
     /**

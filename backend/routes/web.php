@@ -20,7 +20,7 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function() {
 //Route::group([], function(){
     Route::get('/admin/{react?}', function ($react = null) {
-        //dd(session('_keycloak_token'));
+        dd(session('_keycloak_token'));
         return view('admin-frontend.index');
     })->where('react', '.*');
 });
