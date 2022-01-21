@@ -9,23 +9,24 @@ import {
 } from "react-router-dom";
 import { useHasRealmRole } from "../hooks/useHasRole";
 import { NotAuthorized } from "../pages/NotAuthorized";
+
 interface PrivateProps extends RouteProps {
   component:
     | React.ComponentType<RouteComponentProps<any>>
     | React.ComponentType<any>;
 }
+
 const PrivateRoute: React.FC<PrivateProps> = (props) => {
   const { component: Component, ...rest } = props;
-  // KEYCLOAK OFF
-  // const { keycloak } = useKeycloak();  // ORIGINAL
-  const keycloak = { authenticated: true }
+  // KEYCLOAK ON
+  const { keycloak } = useKeycloak();
+  const hasCatalogAdmin = useHasRealmRole('catalog-admin');
   // KEYCLOAK OFF
 
-  const hasCatalogAdmin = useHasRealmRole('catalog-admin');
   const render = React.useCallback((props) => {
     if (keycloak.authenticated) {
-      console.log(keycloak);
-      return hasCatalogAdmin ? <Component {...props} />: <NotAuthorized/>;
+      // return hasCatalogAdmin ? <Component {...props} />: <NotAuthorized/>;
+      return <Component {...props} />;
     }
 
     return (
@@ -36,7 +37,8 @@ const PrivateRoute: React.FC<PrivateProps> = (props) => {
         }}
       />
     );
-  }, [hasCatalogAdmin]);
+  }, [/*hasCatalogAdmin*/]);
+
   return <Route {...rest} render={render} />;
 };
 

@@ -14,7 +14,7 @@ import { keycloak, keycloakConfig } from './util/auth';
 
 const App: React.FC = () => {
     return (
-        // <ReactKeycloakProvider authClient={keycloak} initOptions={keycloakConfig}> // KEYCLOAK OFF
+        <ReactKeycloakProvider authClient={keycloak} initOptions={keycloakConfig}> // KEYCLOAK ON
             <LoadingProvider>
                 <MuiThemeProvider theme={theme}>
                     <SnackbarProvider>
@@ -30,7 +30,7 @@ const App: React.FC = () => {
                     </SnackbarProvider>
                 </MuiThemeProvider>
             </LoadingProvider>
-        // </ReactKeycloakProvider> // KEYCLOAK OFF
+        </ReactKeycloakProvider> // KEYCLOAK OFF
     );
 }
 
