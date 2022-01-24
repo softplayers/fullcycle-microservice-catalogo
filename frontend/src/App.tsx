@@ -14,13 +14,13 @@ import { keycloak, keycloakConfig } from './util/auth';
 
 const App: React.FC = () => {
     return (
-        <ReactKeycloakProvider authClient={keycloak} initOptions={keycloakConfig}> // KEYCLOAK ON
+        <ReactKeycloakProvider authClient={keycloak} initOptions={keycloakConfig}>
             <LoadingProvider>
                 <MuiThemeProvider theme={theme}>
                     <SnackbarProvider>
                         <CssBaseline/>
                         <BrowserRouter basename={process.env.REACT_APP_BASENAME}>
-                            {/* <Spinner/> */}
+                            <Spinner/>
                             <Navbar/>
                             <Box paddingTop={'70px'}>
                                 <Breadcrumbs/>
@@ -30,7 +30,7 @@ const App: React.FC = () => {
                     </SnackbarProvider>
                 </MuiThemeProvider>
             </LoadingProvider>
-        </ReactKeycloakProvider> // KEYCLOAK OFF
+        </ReactKeycloakProvider>
     );
 }
 
