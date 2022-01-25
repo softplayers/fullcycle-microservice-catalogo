@@ -32,10 +32,8 @@ export const Navbar: React.FC = () => {
                 <Typography className={classes.title}>
                     <img src={logo} alt="CodeFlix" className={classes.logo}/>
                 </Typography>
-                {/* TODO: USER OFF
                 <LoginButton/>
                 <UserAccountMenu/>
-                */}
             </Toolbar>
         </AppBar>
     );
