@@ -18,15 +18,12 @@ interface PrivateProps extends RouteProps {
 
 const PrivateRoute: React.FC<PrivateProps> = (props) => {
   const { component: Component, ...rest } = props;
-  // KEYCLOAK ON
   const { keycloak } = useKeycloak();
   const hasCatalogAdmin = useHasRealmRole('catalog-admin');
-  // KEYCLOAK OFF
 
   const render = React.useCallback((props) => {
     if (keycloak.authenticated) {
-      // return hasCatalogAdmin ? <Component {...props} />: <NotAuthorized/>;
-      return <Component {...props} />;
+      return hasCatalogAdmin ? <Component {...props} />: <NotAuthorized/>;
     }
 
     return (
@@ -37,7 +34,7 @@ const PrivateRoute: React.FC<PrivateProps> = (props) => {
         }}
       />
     );
-  }, [/*hasCatalogAdmin*/]);
+  }, [hasCatalogAdmin]);
 
   return <Route {...rest} render={render} />;
 };

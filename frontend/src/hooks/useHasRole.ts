@@ -2,12 +2,7 @@ import { useKeycloak } from "@react-keycloak/web";
 import { useMemo } from "react";
 
 export function useHasRealmRole(role: string) {
-  // KEYCLOAK OFF
-  // const { keycloak, initialized } = useKeycloak(); // ORIGINAL
-  const keycloak = { authenticated: true, hasRealmRole: _ => true };
-  const initialized = true;
-  // KEYCLOAK OFF
-
+  const { keycloak, initialized } = useKeycloak(); // ORIGINAL
   const hasRole = useMemo(() => {
     if (!initialized || !keycloak.authenticated) {
       return false;

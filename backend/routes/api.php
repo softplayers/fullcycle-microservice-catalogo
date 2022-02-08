@@ -26,7 +26,7 @@ Route::group(['namespace' => 'Api'], function () {
 /**/
 Route::group(['namespace' => 'Api', 'middleware' => [
     'auth:api',
-    //'can:catalog-admin'
+    'can:catalog-admin'
 ]], function () {
     $exceptCreateAndEdit = [
         'except' => ['create', 'edit']
