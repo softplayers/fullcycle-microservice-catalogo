@@ -7,7 +7,6 @@ import {
   Link,
 } from "@material-ui/core";
 import AccountBox from "@material-ui/icons/AccountBox";
-// import { useKeycloak } from "@react-keycloak/web"; // KEYCLOAK OFF
 import { useHasClient, useHasRealmRole } from "../../hooks/useHasRole";
 import { keycloakLinks } from "../../util/auth";
 
